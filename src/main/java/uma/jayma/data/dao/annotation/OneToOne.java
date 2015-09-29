@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 public @interface OneToOne {
 
 	boolean selfDriven() default false;
-	
+
 	boolean isComposite() default false;
-	
+
 	String joinColumn();
-	
+
 }

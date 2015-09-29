@@ -26,10 +26,10 @@ import uma.jayma.data.util.DataUtil;
 public class App 
 {
 	public static void main( String[] args )
-    {
+	{
 		Connection conn = null;
-		
-    	try {
+
+		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sigmaflota", "sigmaflota", "sigmaflota");
 		} catch (ClassNotFoundException e2) {
@@ -37,12 +37,12 @@ public class App
 		} catch (SQLException e2) {
 			e2.printStackTrace();
 		}
-        
-        try {
+
+		try {
 			conn.setAutoCommit(false);
-			
+
 			// Creación de DAOs
-			
+
 			OficinaDao ofiDao = new OficinaDaoImpl();
 			ofiDao.setConnection(conn);
 			ProyectoDao proDao = new ProyectoDaoImpl();
@@ -51,189 +51,189 @@ public class App
 			empDao.setConnection(conn);
 			DireccionDao dirDao = new DireccionDaoImpl();
 			dirDao.setConnection(conn);
-			
+
 			// Seteo de Oficinas
-			
+
 			Oficina ofi1 = new Oficina();
 			ofi1.setNombre("Desarrollo");
 			ofi1.setRowVersion(0L);
-			
+
 			Oficina ofi2 = new Oficina();
 			ofi2.setNombre("Analisis");
 			ofi2.setRowVersion(0L);
-			
+
 			ofi1.setId(ofiDao.create(ofi1));
 			ofi2.setId(ofiDao.create(ofi2));
-			
+
 			List<Oficina> ofiList = ofiDao.fetchAll();
 			System.out.println("Oficinas");
 			for (Oficina ofi : ofiList) {
 				System.out.println(DataUtil.toString(ofi));
 			}
-			
+
 			// Seteo de Proyectos
-			
+
 			Proyecto pro1 = new Proyecto();
 			pro1.setNombre("Alfa");
 			pro1.setRowVersion(0L);
-			
+
 			Proyecto pro2 = new Proyecto();
 			pro2.setNombre("Beta");
 			pro2.setRowVersion(0L);
-			
+
 			Proyecto pro3 = new Proyecto();
 			pro3.setNombre("Omega");
 			pro3.setRowVersion(0L);
-			
+
 			pro1.setId(proDao.create(pro1));
 			pro2.setId(proDao.create(pro2));
 			pro3.setId(proDao.create(pro3));
-			
+
 			List<Proyecto> proList = proDao.fetchAll();
 			System.out.println("Proyectos");
 			for (Proyecto pro : proList) {
 				System.out.println(DataUtil.toString(pro));
 			}			
-			
+
 			// Seteo de Empleados
-			
+
 			Empleado emp1 = new Empleado();
 			emp1.setNombre("Sashir");
 			emp1.setApellido("Estela");
 			emp1.setRowVersion(0L);
-			
+
 			Empleado emp2 = new Empleado();
 			emp2.setNombre("Sara");
 			emp2.setApellido("Chota");
 			emp2.setRowVersion(0L);
-			
+
 			Empleado emp3 = new Empleado();
 			emp3.setNombre("Fiorella");
 			emp3.setApellido("Estela");
 			emp3.setRowVersion(0L);
-			
+
 			Empleado emp4 = new Empleado();
 			emp4.setNombre("Facundo");
 			emp4.setApellido("Estela");
 			emp4.setRowVersion(0L);
-			
+
 			emp1.setId(empDao.create(emp1));
 			emp2.setId(empDao.create(emp2));
 			emp3.setId(empDao.create(emp3));
 			emp4.setId(empDao.create(emp4));
-			
+
 			List<Empleado> empList = empDao.fetchAll();
 			System.out.println("Empleados");
-	        for (Empleado emp : empList) {
-	            System.out.println(DataUtil.toString(emp));
+			for (Empleado emp : empList) {
+				System.out.println(DataUtil.toString(emp));
 			}
-			
+
 			// Seteo de Direcciones
-	        
-	        Direccion dir1 = new Direccion();
-	        dir1.setNombreVia("Calle Amazonas");
-	        dir1.setNumero("129");
-	        dir1.setRowVersion(0L);
-	        
-	        Direccion dir2 = new Direccion();
-	        dir2.setNombreVia("Calle Loreto");
-	        dir2.setNumero("207");
-	        dir2.setRowVersion(0L);
-	        
-	        Direccion dir3 = new Direccion();
-	        dir3.setNombreVia("Calle Madre de Dios");
-	        dir3.setNumero("316");
-	        dir3.setRowVersion(0L);
-	        
-	        Direccion dir4 = new Direccion();
-	        dir4.setNombreVia("Calle San Martin");
-	        dir4.setNumero("414");
-	        dir4.setRowVersion(0L);
-	        
-	        dir1.setId(dirDao.create(dir1));
-	        dir2.setId(dirDao.create(dir2));
-	        dir3.setId(dirDao.create(dir3));
-	        dir4.setId(dirDao.create(dir4));
-			
+
+			Direccion dir1 = new Direccion();
+			dir1.setNombreVia("Calle Amazonas");
+			dir1.setNumero("129");
+			dir1.setRowVersion(0L);
+
+			Direccion dir2 = new Direccion();
+			dir2.setNombreVia("Calle Loreto");
+			dir2.setNumero("207");
+			dir2.setRowVersion(0L);
+
+			Direccion dir3 = new Direccion();
+			dir3.setNombreVia("Calle Madre de Dios");
+			dir3.setNumero("316");
+			dir3.setRowVersion(0L);
+
+			Direccion dir4 = new Direccion();
+			dir4.setNombreVia("Calle San Martin");
+			dir4.setNumero("414");
+			dir4.setRowVersion(0L);
+
+			dir1.setId(dirDao.create(dir1));
+			dir2.setId(dirDao.create(dir2));
+			dir3.setId(dirDao.create(dir3));
+			dir4.setId(dirDao.create(dir4));
+
 			List<Direccion> dirList = dirDao.fetchAll();
 			System.out.println("Empleados");
-	        for (Direccion dir : dirList) {
-	            System.out.println(DataUtil.toString(dir));
+			for (Direccion dir : dirList) {
+				System.out.println(DataUtil.toString(dir));
 			}
-			
-	        // Seteo de Asociaciones
-	        
-	        ofiDao.saveLink(ofi1, "empleados", emp1);
-	        ofiDao.saveLink(ofi1, "empleados", emp3);
-	        
-	        empDao.saveLink(emp2, "oficina", ofi2);
-	        empDao.saveLink(emp4, "oficina", ofi2);
-	        
-	        proDao.saveLink(pro1, "empleados", emp1);
-	        proDao.saveLink(pro1, "empleados", emp2);
-	        proDao.saveLink(pro1, "empleados", emp3);
-	        proDao.saveLink(pro2, "empleados", emp2);
-	        proDao.saveLink(pro2, "empleados", emp3);
-	        proDao.saveLink(pro2, "empleados", emp4);
-	        proDao.saveLink(pro3, "empleados", emp1);
-	        proDao.saveLink(pro3, "empleados", emp2);
-	        proDao.saveLink(pro3, "empleados", emp3);
-	        proDao.saveLink(pro3, "empleados", emp4);
-	        
-	        empDao.saveLink(emp1, "direccion", dir1);
-	        empDao.saveLink(emp2, "direccion", dir2);
-	        empDao.saveLink(emp3, "direccion", dir3);
-	        empDao.saveLink(emp4, "direccion", dir4);
-	        
-	        // Display de Asociaciones
-			
-	        ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados"));
-	        System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi1));
-	        for (Empleado emp : ofi1.getEmpleados()) {
-	        	emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
+
+			// Seteo de Asociaciones
+
+			ofiDao.saveLink(ofi1, "empleados", emp1);
+			ofiDao.saveLink(ofi1, "empleados", emp3);
+
+			empDao.saveLink(emp2, "oficina", ofi2);
+			empDao.saveLink(emp4, "oficina", ofi2);
+
+			proDao.saveLink(pro1, "empleados", emp1);
+			proDao.saveLink(pro1, "empleados", emp2);
+			proDao.saveLink(pro1, "empleados", emp3);
+			proDao.saveLink(pro2, "empleados", emp2);
+			proDao.saveLink(pro2, "empleados", emp3);
+			proDao.saveLink(pro2, "empleados", emp4);
+			proDao.saveLink(pro3, "empleados", emp1);
+			proDao.saveLink(pro3, "empleados", emp2);
+			proDao.saveLink(pro3, "empleados", emp3);
+			proDao.saveLink(pro3, "empleados", emp4);
+
+			empDao.saveLink(emp1, "direccion", dir1);
+			empDao.saveLink(emp2, "direccion", dir2);
+			empDao.saveLink(emp3, "direccion", dir3);
+			empDao.saveLink(emp4, "direccion", dir4);
+
+			// Display de Asociaciones
+
+			ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados"));
+			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi1));
+			for (Empleado emp : ofi1.getEmpleados()) {
+				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
-	        
-	        ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados"));
-	        System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi2));
-	        for (Empleado emp : ofi2.getEmpleados()) {
-	        	emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
+
+			ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados"));
+			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi2));
+			for (Empleado emp : ofi2.getEmpleados()) {
+				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
-	        
-	        pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados"));
-	        System.out.println("\nEmpleados del Proyecto: "+DataUtil.toString(pro1));
-	        for (Empleado emp : pro1.getEmpleados()) {
+
+			pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados"));
+			System.out.println("\nEmpleados del Proyecto: "+DataUtil.toString(pro1));
+			for (Empleado emp : pro1.getEmpleados()) {
 				System.out.println(DataUtil.toString(emp));
 			}
-	        
-	        emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos"));
-	        System.out.println("\nProyectos del Empleado: "+DataUtil.toString(emp3));
-	        for (Proyecto pro : emp3.getProyectos()) {
+
+			emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos"));
+			System.out.println("\nProyectos del Empleado: "+DataUtil.toString(emp3));
+			for (Proyecto pro : emp3.getProyectos()) {
 				System.out.println(DataUtil.toString(pro));
 			}
-	        
-	        // Eliminación de Datos
-	        
-	        ofiDao.delete(ofi1.getId());
-	        ofiDao.delete(ofi2.getId());
-	        
-	        proDao.delete(pro1.getId());
-	        proDao.delete(pro2.getId());
-	        proDao.delete(pro3.getId());
-	        
-	        empDao.delete(emp1.getId());
-	        empDao.delete(emp2.getId());
-	        empDao.delete(emp3.getId());
-	        empDao.delete(emp4.getId());
-	        
-	        dirDao.delete(dir1.getId());
-	        dirDao.delete(dir2.getId());
-	        dirDao.delete(dir3.getId());
-	        dirDao.delete(dir4.getId());
-	        	        
+
+			// Eliminación de Datos
+
+			ofiDao.delete(ofi1.getId());
+			ofiDao.delete(ofi2.getId());
+
+			proDao.delete(pro1.getId());
+			proDao.delete(pro2.getId());
+			proDao.delete(pro3.getId());
+
+			empDao.delete(emp1.getId());
+			empDao.delete(emp2.getId());
+			empDao.delete(emp3.getId());
+			empDao.delete(emp4.getId());
+
+			dirDao.delete(dir1.getId());
+			dirDao.delete(dir2.getId());
+			dirDao.delete(dir3.getId());
+			dirDao.delete(dir4.getId());
+
 			conn.commit();
 		} catch (SQLException e) {
 			try {
@@ -248,5 +248,5 @@ public class App
 				e.printStackTrace();
 			}
 		}
-    }
+	}
 }

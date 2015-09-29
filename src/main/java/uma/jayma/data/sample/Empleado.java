@@ -8,22 +8,22 @@ import uma.jayma.data.dao.annotation.ManyToOne;
 import uma.jayma.data.dao.annotation.OneToOne;
 
 public class Empleado {
-	
+
 	@Identifier
 	protected Long id = null;
-	
+
 	protected String nombre = null;
-	
+
 	protected String apellido = null;
-	
+
 	protected Long rowVersion = null;
-	
+
 	@ManyToOne(selfJoinColumn="idOficina")
 	protected Oficina oficina = null;
-	
+
 	@OneToOne(joinColumn="idEmpleado", selfDriven=false)
 	protected Direccion direccion = null;
-	
+
 	@ManyToMany(joinEntity="Asignacion", isClass=false)
 	protected List<Proyecto> proyectos = null;
 

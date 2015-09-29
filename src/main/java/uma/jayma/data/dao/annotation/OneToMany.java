@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface OneToMany {
 
 	String otherJoinColumn();
-	
+
 	boolean isComposite() default false;
-	
+
 }

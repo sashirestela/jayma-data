@@ -29,18 +29,18 @@ import uma.jayma.data.util.DataProperty;
 import uma.jayma.data.util.DataUtil;
 
 public class DaoImpl<T> implements Dao<T> {
-	
+
 	private static Class<?>[] assocAnnotations = {OneToMany.class, ManyToOne.class, OneToOne.class, ManyToMany.class};
-	
+
 	private Class<T> clazz = null;
 	private Connection conn = null;
-	
+
 	@SuppressWarnings("unchecked")
 	public DaoImpl() {
 		ParameterizedType pt = (ParameterizedType)getClass().getGenericSuperclass();
 		this.clazz = (Class<T>)pt.getActualTypeArguments()[0];
 	}
-	
+
 	@Override
 	public void setConnection(Connection conn) {
 		this.conn = conn;
@@ -56,7 +56,7 @@ public class DaoImpl<T> implements Dao<T> {
 	public void update(T obj) {
 		updateGeneric(this.clazz, obj);
 	}
-	
+
 	@Override
 	public void delete(Long id) {
 		deleteGeneric(this.clazz, id);
@@ -79,7 +79,7 @@ public class DaoImpl<T> implements Dao<T> {
 		List<T> list = selectAllGeneric(this.clazz);
 		return list;
 	}
-	
+
 	@Override
 	public <P> void saveLink(T obj, String linkName, P otherObj) {
 		Field field = null;
@@ -90,7 +90,7 @@ public class DaoImpl<T> implements Dao<T> {
 			e.printStackTrace();
 		}
 		Class<?> clazzOther = otherObj.getClass();
-		
+
 		if (field.isAnnotationPresent(OneToMany.class)) {
 			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
 			Long id = null;
@@ -155,7 +155,7 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 		}
 	}
-	
+
 	@Override
 	public <P> void deleteLink(T obj, String linkName, P otherObj) {
 		Field field = null;
@@ -226,7 +226,7 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <P> P fetchLinkOne(T obj, String linkName) {
@@ -239,7 +239,7 @@ public class DaoImpl<T> implements Dao<T> {
 			e.printStackTrace();
 		}
 		Class<?> clazzField = field.getType();
-		
+
 		if (field.isAnnotationPresent(ManyToOne.class)) {
 			String nameSelfId = field.getAnnotation(ManyToOne.class).selfJoinColumn();
 			Long id = null;
@@ -269,7 +269,7 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		return objLink;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <P> List<P> fetchLinkMany(T obj, String linkName) {
@@ -283,7 +283,7 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		ParameterizedType pt = (ParameterizedType)field.getGenericType();
 		Class<?> clazzField = (Class<?>)pt.getActualTypeArguments()[0];
-		
+
 		if (field.isAnnotationPresent(OneToMany.class)) {
 			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
 			Long idOther = null;
@@ -328,13 +328,13 @@ public class DaoImpl<T> implements Dao<T> {
 			pstm = conn.prepareStatement(query);
 			configPreparedStatement(pstm, clazz, obj, getNotIdFieldNames(clazz));
 			pstm.executeUpdate();
-			
+
 			query = getSelectLastInsert(clazz);
 			stm = conn.createStatement();
 			rset = stm.executeQuery(query);
 			if (rset.next()) {
 				lastId = new Long(rset.getObject(1).toString());
-				
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -631,17 +631,17 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		return otherId;
 	}
-	
+
 	private <P> String getValueToInsert(Class<P> clazz) {
 		String text = DataProperty.getSingleton().getSqlDbId(DataConst.DbId.VALUE_TO_INSERT, clazz.getSimpleName());
 		return text;
 	}
-	
+
 	private <P> String getSelectLastInsert(Class<P> clazz) {
 		String text = DataProperty.getSingleton().getSqlDbId(DataConst.DbId.SQL_LAST_INSERT, clazz.getSimpleName());
 		return text;
 	}
-	
+
 	private <P> String getIdFieldName(Class<P> clazz) {
 		String idFieldName = null;
 		for (Field field : clazz.getDeclaredFields()) {
@@ -652,7 +652,7 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		return idFieldName;
 	}
-	
+
 	private <P> List<String> getNotIdFieldNames(Class<P> clazz) {
 		List<String> listNotId = new ArrayList<String>();
 		for (Field field : clazz.getDeclaredFields()) {
@@ -672,7 +672,7 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private boolean isAssociationField(Field field) {
 		boolean is = false;
@@ -681,23 +681,23 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		return is;
 	}
-	
+
 	private String generateFieldsOnly(List<String> list) {
 		String generatedString = DataUtil.delimitListWithSeparator(list, ",");
 		return generatedString;
 	}
-	
+
 	private String generateFieldsSetting(List<String> list) {
 		String generatedString = DataUtil.delimitListWithSeparator(list, "=?,") + "=?";
 		return generatedString;
 	}
-	
+
 	private String generateValueMarks(List<String> list) {
 		String generatedString = new String(new char[list.size()]).replace("\0", ",?");
 		generatedString = generatedString.substring(1);
 		return generatedString;
 	}
-	
+
 	private <P> void configPreparedStatement(PreparedStatement pstm, Class<P> clazz, P obj, List<String> listNames) throws SQLException {
 		int i = 1;
 		for (String fieldName : listNames) {
@@ -715,7 +715,7 @@ public class DaoImpl<T> implements Dao<T> {
 			i++;
 		}
 	}
-	
+
 	private <P> void configResultSet(ResultSet rset, Class<P> clazz, P obj, List<String> listNames) throws SQLException {
 		int i = 1;
 		for (String fieldName : listNames) {

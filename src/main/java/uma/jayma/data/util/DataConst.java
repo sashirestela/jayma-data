@@ -1,12 +1,12 @@
 package uma.jayma.data.util;
 
 public class DataConst {
-	
+
 	public class Config {
 		public static final String URL_DAO_PROPERTIES = "/dao.properties";
-		
+
 		public static final String DATABASE_LANGUAGE = "DataBase.Language";
-		
+
 		public static final String PROPERTY_GROUP_TYPE = "Type";
 		public static final String PROPERTY_GROUP_DBID = "DbId";
 	}
@@ -26,7 +26,7 @@ public class DataConst {
 		public static final String STRING = "STRING";
 		public static final String TEXT = "TEXT";
 	}
-	
+
 	public class DbId {
 		public static final String AUTO_INCREMENT = "AutoIncrement";
 		public static final String SEQUENCE_DEF = "SequenceDef";

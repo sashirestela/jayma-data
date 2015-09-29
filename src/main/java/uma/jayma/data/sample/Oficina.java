@@ -9,14 +9,14 @@ public class Oficina {
 
 	@Identifier
 	protected Long id = null;
-	
+
 	protected String nombre = null;
-	
+
 	protected Long rowVersion = null;
-	
+
 	@OneToMany(otherJoinColumn="idOficina")
 	protected List<Empleado> empleados = null;
-	
+
 	public Oficina() {
 		super();
 	}

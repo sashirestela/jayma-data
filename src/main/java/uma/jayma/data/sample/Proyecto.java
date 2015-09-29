@@ -9,14 +9,14 @@ public class Proyecto {
 
 	@Identifier
 	protected Long id = null;
-	
+
 	protected String nombre = null;
-	
+
 	protected Long rowVersion = null;
-	
+
 	@ManyToMany(joinEntity="Asignacion", isClass=false)
 	protected List<Empleado> empleados = null;
-	
+
 	public Proyecto() {
 		super();
 	}

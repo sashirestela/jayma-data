@@ -3,16 +3,16 @@ package uma.jayma.data.sample;
 import uma.jayma.data.dao.annotation.Identifier;
 
 public class Direccion {
-	
+
 	@Identifier
 	protected Long id = null;
-	
+
 	protected String nombreVia = null;
-	
+
 	protected String numero = null;
-	
+
 	protected Long rowVersion = null;
-	
+
 	public Direccion() {
 		super();
 	}

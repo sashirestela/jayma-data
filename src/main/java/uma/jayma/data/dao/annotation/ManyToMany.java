@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface ManyToMany {
 
 	String joinEntity();
-	
+
 	boolean isClass() default false;
-	
+
 }

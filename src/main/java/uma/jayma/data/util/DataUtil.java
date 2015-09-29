@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DataUtil {
-	
+
 	public static String delimitListWithSeparator(List<String> list, String separator) {
 		String[] array = list.toArray(new String[list.size()]);
 		String listWithSeparator = Arrays.toString(array).replace(", ", separator).replaceAll("[\\[\\]]", "");
 		return listWithSeparator;
 	}
-	
+
 	public static String upperFirst(String text) {
 		String upper = text.substring(0, 1).toUpperCase() + text.substring(1);
 		return upper;
