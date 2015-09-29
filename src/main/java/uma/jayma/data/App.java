@@ -31,7 +31,7 @@ public class App
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sigmaflota", "sigmaflota", "sigmaflota");
+			conn = DriverManager.getConnection("jdbc:mysql://sql3.freemysqlhosting.net:3306/sql391462", "sql391462", "cL4!mQ1*");
 		} catch (ClassNotFoundException e2) {
 			e2.printStackTrace();
 		} catch (SQLException e2) {
