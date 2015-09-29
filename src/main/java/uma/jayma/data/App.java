@@ -25,6 +25,7 @@ import uma.jayma.data.util.DataUtil;
  */
 public class App 
 {
+	@SuppressWarnings("unchecked")
 	public static void main( String[] args )
 	{
 		Connection conn = null;
@@ -187,29 +188,29 @@ public class App
 
 			// Display de Asociaciones
 
-			ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados"));
+			ofi1.setEmpleados((List<Empleado>)(Object)ofiDao.fetchLinkMany(ofi1, "empleados"));
 			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi1));
 			for (Empleado emp : ofi1.getEmpleados()) {
-				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
+				emp.setDireccion((Direccion)(Object)empDao.fetchLinkOne(emp, "direccion"));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
 
-			ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados"));
+			ofi2.setEmpleados((List<Empleado>)(Object)ofiDao.fetchLinkMany(ofi2, "empleados"));
 			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi2));
 			for (Empleado emp : ofi2.getEmpleados()) {
-				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion"));
+				emp.setDireccion((Direccion)(Object)empDao.fetchLinkOne(emp, "direccion"));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
 
-			pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados"));
+			pro1.setEmpleados((List<Empleado>)(Object)proDao.fetchLinkMany(pro1, "empleados"));
 			System.out.println("\nEmpleados del Proyecto: "+DataUtil.toString(pro1));
 			for (Empleado emp : pro1.getEmpleados()) {
 				System.out.println(DataUtil.toString(emp));
 			}
 
-			emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos"));
+			emp3.setProyectos((List<Proyecto>)(Object)empDao.fetchLinkMany(emp3, "proyectos"));
 			System.out.println("\nProyectos del Empleado: "+DataUtil.toString(emp3));
 			for (Proyecto pro : emp3.getProyectos()) {
 				System.out.println(DataUtil.toString(pro));
