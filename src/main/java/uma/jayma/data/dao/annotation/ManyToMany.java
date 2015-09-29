@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ManyToMany {
 
-	String joinName();
+	String joinEntity();
 	
 	boolean isClass() default false;
 	

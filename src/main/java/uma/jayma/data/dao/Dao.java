@@ -25,6 +25,8 @@ public interface Dao<T> {
 	
 	public <P> void deleteLink(T obj, String linkName, P otherObj);
 	
-	public Object fetchLink(T obj, String linkName);
+	public <P> P fetchLinkOne(T obj, String linkName);
+	
+	public <P> List<P> fetchLinkMany(T obj, String linkName);
 	
 }

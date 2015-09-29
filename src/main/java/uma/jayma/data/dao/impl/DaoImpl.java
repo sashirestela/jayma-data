@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uma.jayma.data.dao.Dao;
@@ -82,18 +83,18 @@ public class DaoImpl<T> implements Dao<T> {
 	@Override
 	public <P> void saveLink(T obj, String linkName, P otherObj) {
 		Field field = null;
+		Method gettingMettod = null;
 		try {
 			field = this.clazz.getDeclaredField(linkName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Class<?> clazzOther = otherObj.getClass();
+		
 		if (field.isAnnotationPresent(OneToMany.class)) {
-			Class<?> clazzOther = otherObj.getClass();
-			
 			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
 			Long id = null;
 			Long idOther = null;
-			Method gettingMettod = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
 				id = (Long)gettingMettod.invoke(obj);
@@ -104,12 +105,9 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 			updateOtherId(clazzOther, idOther, nameOtherId, id);
 		} else if (field.isAnnotationPresent(ManyToOne.class)) {
-			Class<?> clazzOther = otherObj.getClass();
-			
 			String nameSelfId = field.getAnnotation(ManyToOne.class).selfJoinColumn();
 			Long id = null;
 			Long idOther = null;
-			Method gettingMettod = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
 				id = (Long)gettingMettod.invoke(obj);
@@ -119,12 +117,49 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(this.clazz, id, nameSelfId, idOther);
+		} else if (field.isAnnotationPresent(OneToOne.class)) {
+			String nameFieldId = field.getAnnotation(OneToOne.class).joinColumn();
+			Long id = null;
+			Long idOther = null;
+			try {
+				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+				id = (Long)gettingMettod.invoke(obj);
+				gettingMettod = clazzOther.getMethod("get"+DataUtil.upperFirst(getIdFieldName(clazzOther)));
+				idOther = (Long)gettingMettod.invoke(otherObj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (field.getAnnotation(OneToOne.class).selfDriven()) {
+				updateOtherId(this.clazz, id, nameFieldId, idOther);
+			} else {
+				updateOtherId(clazzOther, idOther, nameFieldId, id);
+			}
+		} else if (field.isAnnotationPresent(ManyToMany.class)) {
+			String nameEntity = field.getAnnotation(ManyToMany.class).joinEntity();
+			if (!field.getAnnotation(ManyToMany.class).isClass()) {
+				Long id = null;
+				Long idOther = null;
+				try {
+					gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+					id = (Long)gettingMettod.invoke(obj);
+					gettingMettod = clazzOther.getMethod("get"+DataUtil.upperFirst(getIdFieldName(clazzOther)));
+					idOther = (Long)gettingMettod.invoke(otherObj);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				List<String> fieldNames = Arrays.asList(getIdFieldName(this.clazz)+this.clazz.getSimpleName(), getIdFieldName(clazzOther)+clazzOther.getSimpleName());
+				List<Long> values = Arrays.asList(id, idOther);
+				createManyMany(nameEntity, fieldNames, values);
+			} else {
+				// Is Class
+			}
 		}
 	}
 	
 	@Override
 	public <P> void deleteLink(T obj, String linkName, P otherObj) {
 		Field field = null;
+		Method gettingMettod = null;
 		try {
 			field = this.clazz.getDeclaredField(linkName);
 		} catch (Exception e) {
@@ -132,10 +167,8 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		if (field.isAnnotationPresent(OneToMany.class)) {
 			Class<?> clazzOther = otherObj.getClass();
-			
 			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
 			Long idOther = null;
-			Method gettingMettod = null;
 			try {
 				gettingMettod = clazzOther.getMethod("get"+DataUtil.upperFirst(getIdFieldName(clazzOther)));
 				idOther = (Long)gettingMettod.invoke(otherObj);
@@ -146,7 +179,6 @@ public class DaoImpl<T> implements Dao<T> {
 		} else if (field.isAnnotationPresent(ManyToOne.class)) {
 			String nameSelfId = field.getAnnotation(ManyToOne.class).selfJoinColumn();
 			Long id = null;
-			Method gettingMettod = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
 				id = (Long)gettingMettod.invoke(obj);
@@ -154,48 +186,135 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(this.clazz, id, nameSelfId, null);
+		} else if (field.isAnnotationPresent(OneToOne.class)) {
+			Class<?> clazzOther = otherObj.getClass();
+			String nameFieldId = field.getAnnotation(OneToOne.class).joinColumn();
+			Long id = null;
+			Long idOther = null;
+			try {
+				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+				id = (Long)gettingMettod.invoke(obj);
+				gettingMettod = clazzOther.getMethod("get"+DataUtil.upperFirst(getIdFieldName(clazzOther)));
+				idOther = (Long)gettingMettod.invoke(otherObj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (field.getAnnotation(OneToOne.class).selfDriven()) {
+				updateOtherId(this.clazz, id, nameFieldId, null);
+			} else {
+				updateOtherId(clazzOther, idOther, nameFieldId, null);
+			}
+		} else if (field.isAnnotationPresent(ManyToMany.class)) {
+			Class<?> clazzOther = otherObj.getClass();
+			String nameEntity = field.getAnnotation(ManyToMany.class).joinEntity();
+			if (!field.getAnnotation(ManyToMany.class).isClass()) {
+				Long id = null;
+				Long idOther = null;
+				try {
+					gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+					id = (Long)gettingMettod.invoke(obj);
+					gettingMettod = clazzOther.getMethod("get"+DataUtil.upperFirst(getIdFieldName(clazzOther)));
+					idOther = (Long)gettingMettod.invoke(otherObj);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				List<String> fieldNames = Arrays.asList(getIdFieldName(this.clazz)+this.clazz.getSimpleName(), getIdFieldName(clazzOther)+clazzOther.getSimpleName());
+				List<Long> values = Arrays.asList(id, idOther);
+				deleteManyMany(nameEntity, fieldNames, values);
+			} else {
+				// Is Association-Class
+			}
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object fetchLink(T obj, String linkName) {
-		Object result = null;
+	public <P> P fetchLinkOne(T obj, String linkName) {
+		P objLink = null;
 		Field field = null;
+		Method gettingMettod = null;
 		try {
 			field = this.clazz.getDeclaredField(linkName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (field.isAnnotationPresent(OneToMany.class)) {
-			ParameterizedType pt = (ParameterizedType)field.getGenericType();
-			Class<?> clazzField = (Class<?>)pt.getActualTypeArguments()[0];
-			
-			String idOther = field.getAnnotation(OneToMany.class).otherJoinColumn();
-			Long valueId = null;
+		Class<?> clazzField = field.getType();
+		
+		if (field.isAnnotationPresent(ManyToOne.class)) {
+			String nameSelfId = field.getAnnotation(ManyToOne.class).selfJoinColumn();
+			Long id = null;
 			try {
-				Method gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
-				valueId = (Long)gettingMettod.invoke(obj);
+				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+				id = (Long)gettingMettod.invoke(obj);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			List<?> listLink = selectGeneric(clazzField, idOther+"=?", valueId);
-			result = listLink;
-		} else if (field.isAnnotationPresent(ManyToOne.class)) {
-			Class<?> clazzField = field.getType();
-			
-			String idSelf = field.getAnnotation(ManyToOne.class).selfJoinColumn();
-			Long valueId = null;
+			Long idOther = selectOtherId(this.clazz, nameSelfId, id);
+			objLink = (P)selectGeneric(clazzField, idOther);
+		} else if (field.isAnnotationPresent(OneToOne.class)) {
+			String nameFieldId = field.getAnnotation(OneToOne.class).joinColumn();
+			Long id = null;
 			try {
-				Method gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
-				valueId = (Long)gettingMettod.invoke(obj);
+				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+				id = (Long)gettingMettod.invoke(obj);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			Long valueOtherId = selectOtherId(this.clazz, idSelf, valueId);
-			Object objLink = selectGeneric(clazzField, valueOtherId);
-			result = objLink;
+			if (field.getAnnotation(OneToOne.class).selfDriven()) {
+				Long idOther = selectOtherId(this.clazz, nameFieldId, id);
+				objLink = (P)selectGeneric(clazzField, idOther);
+			} else {
+				objLink = (P)(selectGeneric(clazzField, nameFieldId+"=?", id).get(0));
+			}
 		}
-		return result;
+		return objLink;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <P> List<P> fetchLinkMany(T obj, String linkName) {
+		List<P> lstLink = null;
+		Field field = null;
+		Method gettingMettod = null;
+		try {
+			field = this.clazz.getDeclaredField(linkName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		ParameterizedType pt = (ParameterizedType)field.getGenericType();
+		Class<?> clazzField = (Class<?>)pt.getActualTypeArguments()[0];
+		
+		if (field.isAnnotationPresent(OneToMany.class)) {
+			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
+			Long idOther = null;
+			try {
+				gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+				idOther = (Long)gettingMettod.invoke(obj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			lstLink = (List<P>)selectGeneric(clazzField, nameOtherId+"=?", idOther);
+		} else if (field.isAnnotationPresent(ManyToMany.class)) {
+			String nameEntity = field.getAnnotation(ManyToMany.class).joinEntity();
+			if (!field.getAnnotation(ManyToMany.class).isClass()) {
+				Long id = null;
+				try {
+					gettingMettod = this.clazz.getMethod("get"+DataUtil.upperFirst(getIdFieldName(this.clazz)));
+					id = (Long)gettingMettod.invoke(obj);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				String where = "EXISTS (SELECT 1 FROM {0} WHERE {1}={2} AND {3}=?)";
+				where = MessageFormat.format(where, nameEntity,
+						clazzField.getSimpleName()+"."+getIdFieldName(clazzField),
+						nameEntity+"."+getIdFieldName(clazzField)+clazzField.getSimpleName(),
+						nameEntity+"."+getIdFieldName(this.clazz)+this.clazz.getSimpleName());
+				lstLink = (List<P>)selectGeneric(clazzField, where, id);
+			} else {
+				// Is Association-Class
+			}
+		}
+		return lstLink;
 	}
 
 	private <P> Long createGeneric(Class<P> clazz, P obj) {
@@ -209,12 +328,8 @@ public class DaoImpl<T> implements Dao<T> {
 			pstm = conn.prepareStatement(query);
 			configPreparedStatement(pstm, clazz, obj, getNotIdFieldNames(clazz));
 			pstm.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			String query = getSelectLastInsert(clazz);
+			
+			query = getSelectLastInsert(clazz);
 			stm = conn.createStatement();
 			rset = stm.executeQuery(query);
 			if (rset.next()) {
@@ -242,6 +357,29 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 		}
 		return lastId;
+	}
+
+	private void createManyMany(String nameTable, List<String> fieldNames, List<Long> values) {
+		PreparedStatement pstm = null;
+		try {
+			String query = "INSERT INTO {0} ({1}) VALUES ({2})";
+			query = MessageFormat.format(query, nameTable, generateFieldsOnly(fieldNames), generateValueMarks(fieldNames));
+			pstm = conn.prepareStatement(query);
+			pstm.setObject(1, values.get(0));
+			pstm.setObject(2, values.get(1));
+			pstm.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstm != null) {
+					pstm.close();
+					pstm = null;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private <P> void updateGeneric(Class<P> clazz, P obj) {
@@ -301,6 +439,29 @@ public class DaoImpl<T> implements Dao<T> {
 			query = MessageFormat.format(query, clazz.getSimpleName(), getIdFieldName(clazz));
 			pstm = conn.prepareStatement(query);
 			pstm.setObject(1, id);
+			pstm.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstm != null) {
+					pstm.close();
+					pstm = null;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void deleteManyMany(String nameTable, List<String> fieldNames, List<Long> values) {
+		PreparedStatement pstm = null;
+		try {
+			String query = "DELETE FROM {0} WHERE {1}=? AND {2}=?";
+			query = MessageFormat.format(query, nameTable, fieldNames.get(0), fieldNames.get(1));
+			pstm = conn.prepareStatement(query);
+			pstm.setObject(1, values.get(0));
+			pstm.setObject(2, values.get(1));
 			pstm.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

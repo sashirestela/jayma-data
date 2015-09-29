@@ -1,7 +1,11 @@
 package uma.jayma.data.sample;
 
+import java.util.List;
+
 import uma.jayma.data.dao.annotation.Identifier;
+import uma.jayma.data.dao.annotation.ManyToMany;
 import uma.jayma.data.dao.annotation.ManyToOne;
+import uma.jayma.data.dao.annotation.OneToOne;
 
 public class Empleado {
 	
@@ -16,6 +20,12 @@ public class Empleado {
 	
 	@ManyToOne(selfJoinColumn="idOficina")
 	protected Oficina oficina = null;
+	
+	@OneToOne(joinColumn="idEmpleado", selfDriven=false)
+	protected Direccion direccion = null;
+	
+	@ManyToMany(joinEntity="Asignacion", isClass=false)
+	protected List<Proyecto> proyectos = null;
 
 	public Empleado() {
 		super();
@@ -59,5 +69,21 @@ public class Empleado {
 
 	public void setOficina(Oficina oficina) {
 		this.oficina = oficina;
+	}
+
+	public Direccion getDireccion() {
+		return direccion;
+	}
+
+	public void setDireccion(Direccion direccion) {
+		this.direccion = direccion;
+	}
+
+	public List<Proyecto> getProyectos() {
+		return proyectos;
+	}
+
+	public void setProyectos(List<Proyecto> proyectos) {
+		this.proyectos = proyectos;
 	}
 }
