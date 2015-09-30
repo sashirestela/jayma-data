@@ -25,18 +25,22 @@ import uma.jayma.data.util.DataUtil;
  */
 public class App 
 {
-	@SuppressWarnings("unchecked")
 	public static void main( String[] args )
 	{
 		Connection conn = null;
+		
+		final String dbDrv = "com.mysql.jdbc.Driver";
+		final String dbUrl = "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql391462";
+		final String dbUsr = "sql391462";
+		final String dbPwd = "cL4!mQ1*";
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://sql3.freemysqlhosting.net:3306/sql391462", "sql391462", "cL4!mQ1*");
-		} catch (ClassNotFoundException e2) {
-			e2.printStackTrace();
-		} catch (SQLException e2) {
-			e2.printStackTrace();
+			Class.forName(dbDrv);
+			conn = DriverManager.getConnection(dbUrl, dbUsr, dbPwd);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 		try {
@@ -67,7 +71,7 @@ public class App
 			ofi2.setId(ofiDao.create(ofi2));
 
 			List<Oficina> ofiList = ofiDao.fetchAll();
-			System.out.println("Oficinas");
+			System.out.println("\nOficinas");
 			for (Oficina ofi : ofiList) {
 				System.out.println(DataUtil.toString(ofi));
 			}
@@ -91,7 +95,7 @@ public class App
 			pro3.setId(proDao.create(pro3));
 
 			List<Proyecto> proList = proDao.fetchAll();
-			System.out.println("Proyectos");
+			System.out.println("\nProyectos");
 			for (Proyecto pro : proList) {
 				System.out.println(DataUtil.toString(pro));
 			}			
@@ -124,7 +128,7 @@ public class App
 			emp4.setId(empDao.create(emp4));
 
 			List<Empleado> empList = empDao.fetchAll();
-			System.out.println("Empleados");
+			System.out.println("\nEmpleados");
 			for (Empleado emp : empList) {
 				System.out.println(DataUtil.toString(emp));
 			}
@@ -157,7 +161,7 @@ public class App
 			dir4.setId(dirDao.create(dir4));
 
 			List<Direccion> dirList = dirDao.fetchAll();
-			System.out.println("Empleados");
+			System.out.println("\nDirecciones");
 			for (Direccion dir : dirList) {
 				System.out.println(DataUtil.toString(dir));
 			}
@@ -188,29 +192,29 @@ public class App
 
 			// Display de Asociaciones
 
-			ofi1.setEmpleados((List<Empleado>)(Object)ofiDao.fetchLinkMany(ofi1, "empleados"));
+			ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados", Empleado.class));
 			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi1));
 			for (Empleado emp : ofi1.getEmpleados()) {
-				emp.setDireccion((Direccion)(Object)empDao.fetchLinkOne(emp, "direccion"));
+				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
 
-			ofi2.setEmpleados((List<Empleado>)(Object)ofiDao.fetchLinkMany(ofi2, "empleados"));
+			ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados", Empleado.class));
 			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi2));
 			for (Empleado emp : ofi2.getEmpleados()) {
-				emp.setDireccion((Direccion)(Object)empDao.fetchLinkOne(emp, "direccion"));
+				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
 				System.out.println(DataUtil.toString(emp));
 				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
 			}
 
-			pro1.setEmpleados((List<Empleado>)(Object)proDao.fetchLinkMany(pro1, "empleados"));
+			pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados", Empleado.class));
 			System.out.println("\nEmpleados del Proyecto: "+DataUtil.toString(pro1));
 			for (Empleado emp : pro1.getEmpleados()) {
 				System.out.println(DataUtil.toString(emp));
 			}
 
-			emp3.setProyectos((List<Proyecto>)(Object)empDao.fetchLinkMany(emp3, "proyectos"));
+			emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos", Proyecto.class));
 			System.out.println("\nProyectos del Empleado: "+DataUtil.toString(emp3));
 			for (Proyecto pro : emp3.getProyectos()) {
 				System.out.println(DataUtil.toString(pro));

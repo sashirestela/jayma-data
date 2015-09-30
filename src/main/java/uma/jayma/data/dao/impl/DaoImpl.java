@@ -227,9 +227,8 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <P> P fetchLinkOne(T obj, String linkName) {
+	public <P> P fetchLinkOne(T obj, String linkName, Class<P> clazzLink) {
 		P objLink = null;
 		Field field = null;
 		Method gettingMettod = null;
@@ -238,7 +237,7 @@ public class DaoImpl<T> implements Dao<T> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Class<?> clazzField = field.getType();
+		//Class<?> clazzLink = field.getType();
 
 		if (field.isAnnotationPresent(ManyToOne.class)) {
 			String nameSelfId = field.getAnnotation(ManyToOne.class).selfJoinColumn();
@@ -250,7 +249,7 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			Long idOther = selectOtherId(this.clazz, nameSelfId, id);
-			objLink = (P)selectGeneric(clazzField, idOther);
+			objLink = (P)selectGeneric(clazzLink, idOther);
 		} else if (field.isAnnotationPresent(OneToOne.class)) {
 			String nameFieldId = field.getAnnotation(OneToOne.class).joinColumn();
 			Long id = null;
@@ -262,17 +261,16 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 			if (field.getAnnotation(OneToOne.class).selfDriven()) {
 				Long idOther = selectOtherId(this.clazz, nameFieldId, id);
-				objLink = (P)selectGeneric(clazzField, idOther);
+				objLink = (P)selectGeneric(clazzLink, idOther);
 			} else {
-				objLink = (P)(selectGeneric(clazzField, nameFieldId+"=?", id).get(0));
+				objLink = (P)(selectGeneric(clazzLink, nameFieldId+"=?", id).get(0));
 			}
 		}
 		return objLink;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <P> List<P> fetchLinkMany(T obj, String linkName) {
+	public <P> List<P> fetchLinkMany(T obj, String linkName, Class<P> clazzLink) {
 		List<P> lstLink = null;
 		Field field = null;
 		Method gettingMettod = null;
@@ -281,8 +279,8 @@ public class DaoImpl<T> implements Dao<T> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ParameterizedType pt = (ParameterizedType)field.getGenericType();
-		Class<?> clazzField = (Class<?>)pt.getActualTypeArguments()[0];
+		//ParameterizedType pt = (ParameterizedType)field.getGenericType();
+		//Class<?> clazzLink = (Class<?>)pt.getActualTypeArguments()[0];
 
 		if (field.isAnnotationPresent(OneToMany.class)) {
 			String nameOtherId = field.getAnnotation(OneToMany.class).otherJoinColumn();
@@ -293,7 +291,7 @@ public class DaoImpl<T> implements Dao<T> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			lstLink = (List<P>)selectGeneric(clazzField, nameOtherId+"=?", idOther);
+			lstLink = (List<P>)selectGeneric(clazzLink, nameOtherId+"=?", idOther);
 		} else if (field.isAnnotationPresent(ManyToMany.class)) {
 			String nameEntity = field.getAnnotation(ManyToMany.class).joinEntity();
 			if (!field.getAnnotation(ManyToMany.class).isClass()) {
@@ -306,10 +304,10 @@ public class DaoImpl<T> implements Dao<T> {
 				}
 				String where = "EXISTS (SELECT 1 FROM {0} WHERE {1}={2} AND {3}=?)";
 				where = MessageFormat.format(where, nameEntity,
-						clazzField.getSimpleName()+"."+getIdFieldName(clazzField),
-						nameEntity+"."+getIdFieldName(clazzField)+clazzField.getSimpleName(),
+						clazzLink.getSimpleName()+"."+getIdFieldName(clazzLink),
+						nameEntity+"."+getIdFieldName(clazzLink)+clazzLink.getSimpleName(),
 						nameEntity+"."+getIdFieldName(this.clazz)+this.clazz.getSimpleName());
-				lstLink = (List<P>)selectGeneric(clazzField, where, id);
+				lstLink = (List<P>)selectGeneric(clazzLink, where, id);
 			} else {
 				// Is Association-Class
 			}

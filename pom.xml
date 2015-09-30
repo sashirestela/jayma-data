@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>jayma-data</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/sashirestela/jayma-data</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
