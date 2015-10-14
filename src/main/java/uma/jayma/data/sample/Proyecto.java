@@ -2,8 +2,8 @@ package uma.jayma.data.sample;
 
 import java.util.List;
 
-import uma.jayma.data.dao.annotation.Identifier;
-import uma.jayma.data.dao.annotation.ManyToMany;
+import uma.jayma.data.annotation.Identifier;
+import uma.jayma.data.annotation.Many_Many;
 
 public class Proyecto {
 
@@ -14,7 +14,7 @@ public class Proyecto {
 
 	protected Long rowVersion = null;
 
-	@ManyToMany(joinEntity="Asignacion", isClass=false)
+	@Many_Many(joinEntity="Asignacion", isClass=false)
 	protected List<Empleado> empleados = null;
 
 	public Proyecto() {

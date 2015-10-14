@@ -17,7 +17,7 @@ import uma.jayma.data.sample.OficinaDaoImpl;
 import uma.jayma.data.sample.Proyecto;
 import uma.jayma.data.sample.ProyectoDao;
 import uma.jayma.data.sample.ProyectoDaoImpl;
-import uma.jayma.data.util.DataUtil;
+import uma.jayma.data.util.Util;
 
 /**
  * Hello world!
@@ -73,7 +73,7 @@ public class App
 			List<Oficina> ofiList = ofiDao.fetchAll();
 			System.out.println("\nOficinas");
 			for (Oficina ofi : ofiList) {
-				System.out.println(DataUtil.toString(ofi));
+				System.out.println(Util.toString(ofi));
 			}
 
 			// Seteo de Proyectos
@@ -97,7 +97,7 @@ public class App
 			List<Proyecto> proList = proDao.fetchAll();
 			System.out.println("\nProyectos");
 			for (Proyecto pro : proList) {
-				System.out.println(DataUtil.toString(pro));
+				System.out.println(Util.toString(pro));
 			}			
 
 			// Seteo de Empleados
@@ -130,7 +130,7 @@ public class App
 			List<Empleado> empList = empDao.fetchAll();
 			System.out.println("\nEmpleados");
 			for (Empleado emp : empList) {
-				System.out.println(DataUtil.toString(emp));
+				System.out.println(Util.toString(emp));
 			}
 
 			// Seteo de Direcciones
@@ -163,7 +163,7 @@ public class App
 			List<Direccion> dirList = dirDao.fetchAll();
 			System.out.println("\nDirecciones");
 			for (Direccion dir : dirList) {
-				System.out.println(DataUtil.toString(dir));
+				System.out.println(Util.toString(dir));
 			}
 
 			// Seteo de Asociaciones
@@ -193,31 +193,31 @@ public class App
 			// Display de Asociaciones
 
 			ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados", Empleado.class));
-			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi1));
+			System.out.println("\nEmpleados de la Oficina: "+Util.toString(ofi1));
 			for (Empleado emp : ofi1.getEmpleados()) {
 				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
-				System.out.println(DataUtil.toString(emp));
-				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
+				System.out.println(Util.toString(emp));
+				System.out.println("\tDireccion: "+Util.toString(emp.getDireccion()));
 			}
 
 			ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados", Empleado.class));
-			System.out.println("\nEmpleados de la Oficina: "+DataUtil.toString(ofi2));
+			System.out.println("\nEmpleados de la Oficina: "+Util.toString(ofi2));
 			for (Empleado emp : ofi2.getEmpleados()) {
 				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
-				System.out.println(DataUtil.toString(emp));
-				System.out.println("\tDireccion: "+DataUtil.toString(emp.getDireccion()));
+				System.out.println(Util.toString(emp));
+				System.out.println("\tDireccion: "+Util.toString(emp.getDireccion()));
 			}
 
 			pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados", Empleado.class));
-			System.out.println("\nEmpleados del Proyecto: "+DataUtil.toString(pro1));
+			System.out.println("\nEmpleados del Proyecto: "+Util.toString(pro1));
 			for (Empleado emp : pro1.getEmpleados()) {
-				System.out.println(DataUtil.toString(emp));
+				System.out.println(Util.toString(emp));
 			}
 
 			emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos", Proyecto.class));
-			System.out.println("\nProyectos del Empleado: "+DataUtil.toString(emp3));
+			System.out.println("\nProyectos del Empleado: "+Util.toString(emp3));
 			for (Proyecto pro : emp3.getProyectos()) {
-				System.out.println(DataUtil.toString(pro));
+				System.out.println(Util.toString(pro));
 			}
 
 			// Eliminación de Datos

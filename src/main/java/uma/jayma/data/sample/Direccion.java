@@ -1,6 +1,6 @@
 package uma.jayma.data.sample;
 
-import uma.jayma.data.dao.annotation.Identifier;
+import uma.jayma.data.annotation.Identifier;
 
 public class Direccion {
 

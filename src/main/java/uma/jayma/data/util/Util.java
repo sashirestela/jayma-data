@@ -5,9 +5,9 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-public class DataUtil {
+public class Util {
 
-	public static String delimitListWithSeparator(List<String> list, String separator) {
+	public static String listToStringWithSeparator(List<String> list, String separator) {
 		String[] array = list.toArray(new String[list.size()]);
 		String listWithSeparator = Arrays.toString(array).replace(", ", separator).replaceAll("[\\[\\]]", "");
 		return listWithSeparator;
