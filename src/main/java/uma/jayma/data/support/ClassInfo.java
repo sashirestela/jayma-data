@@ -6,25 +6,31 @@ import java.util.Map;
 
 public class ClassInfo {
 
-	protected String name;
-	
+	protected String className;
+	protected String idName;
 	protected Field idField;
-	
 	protected Map<String, Field> noIdField;
 	protected Map<String, Field> allField;
 	protected Map<String, Field> assocField;
-	
 	protected Map<String, Method> getMethod;
 	protected Map<String, Method> setMethod;
 	
 	public ClassInfo() {}
 
-	public String getName() {
-		return name;
+	public String getClassName() {
+		return className;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getIdName() {
+		return idName;
+	}
+
+	public void setIdName(String idName) {
+		this.idName = idName;
 	}
 
 	public Field getIdField() {

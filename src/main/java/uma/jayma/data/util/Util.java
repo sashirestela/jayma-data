@@ -9,8 +9,8 @@ public class Util {
 
 	public static String listToStringWithSeparator(List<String> list, String separator) {
 		String[] array = list.toArray(new String[list.size()]);
-		String listWithSeparator = Arrays.toString(array).replace(", ", separator).replaceAll("[\\[\\]]", "");
-		return listWithSeparator;
+		String result = Arrays.toString(array).replace(", ", separator).replaceAll("[\\[\\]]", "");
+		return result;
 	}
 
 	public static String upperFirst(String text) {
@@ -22,11 +22,10 @@ public class Util {
 		String text = "[";
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
-			if (Modifier.isProtected(field.getModifiers()) && !field.getType().equals(List.class)) {
-				String fieldName = field.getName();
-				String fieldNameUpperFirst = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+			if (Modifier.isProtected(field.getModifiers()) &&
+			(field.getType().isPrimitive() || field.getType().getName().substring(0, 4).equals("java"))) {
 				try {
-					text += field.getName() + "=" + obj.getClass().getMethod("get" + fieldNameUpperFirst).invoke(obj) + "; ";
+					text += field.getName() + "=" + obj.getClass().getMethod("get" + upperFirst(field.getName())).invoke(obj) + "; ";
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

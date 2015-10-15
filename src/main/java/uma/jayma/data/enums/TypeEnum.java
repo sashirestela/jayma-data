@@ -1,6 +1,6 @@
 package uma.jayma.data.enums;
 
-public enum Type {
+public enum TypeEnum {
 	BOOLEAN,
 	BYTE,
 	SHORT,

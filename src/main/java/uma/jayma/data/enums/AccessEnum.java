@@ -1,12 +1,12 @@
 package uma.jayma.data.enums;
 
-public enum Accessor {
+public enum AccessEnum {
 	GET("get"),
 	SET("set");
 	
 	private final String text;
 	
-	private Accessor(final String text) {
+	private AccessEnum(final String text) {
 		this.text = text;
 	}
 	

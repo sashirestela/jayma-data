@@ -1,6 +1,6 @@
 package uma.jayma.data.enums;
 
-public enum Query {
+public enum SqlEnum {
 	INSERT_REGULAR,
 	INSERT_MANY_MANY,
 	DELETE_REGULAR,
@@ -14,7 +14,7 @@ public enum Query {
 	
 	private final String text;
 	
-	private Query() {
+	private SqlEnum() {
 		this.text = this.name();
 	}
 	

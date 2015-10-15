@@ -402,9 +402,8 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 	}
 
-	protected <P> boolean updateOtherId(Class<P> clazz, Long id, String nameOtherId, Long otherId) {
+	protected <P> void updateOtherId(Class<P> clazz, Long id, String nameOtherId, Long otherId) {
 		PreparedStatement pstm = null;
-		boolean result = false;
 		try {
 			String query = "UPDATE {0} SET {1}=? WHERE {2}=?";
 			query = MessageFormat.format(query, clazz.getSimpleName(), nameOtherId, getIdFieldName(clazz));
@@ -412,7 +411,6 @@ public class DaoImpl<T> implements Dao<T> {
 			pstm.setObject(1, otherId);
 			pstm.setObject(2, id);
 			pstm.executeUpdate();
-			result = true;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -425,7 +423,6 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 		}
-		return result;
 	}
 
 	protected <P> void deleteGeneric(Class<P> clazz, Long id) {

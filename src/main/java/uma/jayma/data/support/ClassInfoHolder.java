@@ -13,7 +13,7 @@ import uma.jayma.data.annotation.Many_Many;
 import uma.jayma.data.annotation.Many_One;
 import uma.jayma.data.annotation.One_Many;
 import uma.jayma.data.annotation.One_One;
-import uma.jayma.data.enums.Accessor;
+import uma.jayma.data.enums.AccessEnum;
 import uma.jayma.data.util.Util;
 
 public class ClassInfoHolder {
@@ -30,12 +30,17 @@ public class ClassInfoHolder {
 		}
 	}
 	
-	public String getName() {
-		String name = mapClassInfo.get(clazz).getName();
+	public String getClassName() {
+		String name = mapClassInfo.get(clazz).getClassName();
 		return name;
 	}
 	
-	public Field getId() {
+	public String getIdName() {
+		String name = mapClassInfo.get(clazz).getIdName();
+		return name;
+	}
+	
+	public Field getIdField() {
 		Field field = mapClassInfo.get(clazz).getIdField();
 		return field;
 	}
@@ -65,11 +70,11 @@ public class ClassInfoHolder {
 		return field;
 	}
 	
-	public Method getMethod(Accessor accessor, String fieldName) {
+	public Method getMethod(AccessEnum access, String fieldName) {
 		Method method = null;
-		if (accessor == Accessor.GET) {
+		if (access == AccessEnum.GET) {
 			method = mapClassInfo.get(clazz).getGetMethod().get(fieldName);
-		} else if (accessor == Accessor.SET) {
+		} else if (access == AccessEnum.SET) {
 			method = mapClassInfo.get(clazz).getSetMethod().get(fieldName);
 		}
 		return method;
@@ -100,13 +105,14 @@ public class ClassInfoHolder {
 		for (Field field : allField.values()) {
 			String fieldName = field.getName();
 			try {
-				getMethod.put(fieldName, clazz.getMethod(Accessor.GET + Util.upperFirst(fieldName)));
-				setMethod.put(fieldName, clazz.getMethod(Accessor.SET + Util.upperFirst(fieldName)));
+				getMethod.put(fieldName, clazz.getMethod(AccessEnum.GET + Util.upperFirst(fieldName)));
+				setMethod.put(fieldName, clazz.getMethod(AccessEnum.SET + Util.upperFirst(fieldName)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		info.setName(clazz.getSimpleName());
+		info.setClassName(clazz.getSimpleName());
+		info.setIdName(idField.getName());
 		info.setIdField(idField);
 		info.setNoIdField(noIdField);
 		info.setAllField(allField);
