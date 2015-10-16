@@ -1,4 +1,4 @@
-package uma.jayma.data.enums;
+package uma.jayma.data.classinfo;
 
 public enum AccessEnum {
 	GET("get"),

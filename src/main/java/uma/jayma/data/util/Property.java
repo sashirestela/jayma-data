@@ -14,11 +14,11 @@ public class Property {
 		loadProperties();
 	}
 
-	public static Property getSingleton() {
+	public static Property getIt() {
 		return singleton;
 	}
 
-	private void loadProperties() {
+	protected void loadProperties() {
 		properties = new Properties();
 		try {
 			properties.load(getClass().getResourceAsStream(Const.Config.URL_DAO_PROPERTIES));

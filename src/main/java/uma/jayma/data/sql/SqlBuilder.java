@@ -1,52 +1,58 @@
-package uma.jayma.data.support;
+package uma.jayma.data.sql;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uma.jayma.data.enums.SqlEnum;
+import uma.jayma.data.classinfo.ClassInfoHolder;
 import uma.jayma.data.util.Const;
 import uma.jayma.data.util.Property;
 import uma.jayma.data.util.Util;
 
-public class SqlHolder {
+public class SqlBuilder {
+	
+	private final static SqlBuilder singleton = new SqlBuilder();
 
-	protected static Map<String, String> mapSql = new HashMap<>();
+	private static Map<String, String> mapSql = new HashMap<>();
 	
-	public SqlHolder() {}
+	private SqlBuilder() {}
 	
-	public String getSqlInsert(Class<?> clazz) {
+	public static SqlBuilder getIt() {
+		return singleton;
+	}
+	
+	public String getInsertSingle(Class<?> clazz) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.INSERT_REGULAR;
+		String key = holder.getClassName()+"-"+SqlEnum.INSERT_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "INSERT INTO {0} ({1}) VALUES ({2},{3})";
 			sql = MessageFormat.format(sql,
 					holder.getClassName(),
-					generateFieldsOnly(holder.getAllFieldNames()),
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
 					getValueToInsert(holder.getClassName()),
-					generateValueMarks(holder.getNoIdFieldNames()));
+					stringMarksToInsert(holder.getNoIdFieldNames()));
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);
 	}
 	
-	public String getSqlInsertManyMany(String nameTable, List<String> fieldNames) {
-		String key = nameTable+"-"+SqlEnum.INSERT_MANY_MANY;
+	public String getInsertManyMany(String nameTable, List<String> fieldNames) {
+		String key = nameTable+"-"+SqlEnum.INSERT_MANY_MANY+"-"+fieldNames.get(0)+"-"+fieldNames.get(1);
 		if (!mapSql.containsKey(key)) {
 			String sql = "INSERT INTO {0} ({1}) VALUES ({2})";
 			sql = MessageFormat.format(sql,
 					nameTable,
-					generateFieldsOnly(fieldNames),
-					generateValueMarks(fieldNames));
+					stringFieldsToEnumerate(fieldNames),
+					stringMarksToInsert(fieldNames));
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);
 	}
 	
-	public String getSqlDelete(Class<?> clazz) {
+	public String getDeleteSingle(Class<?> clazz) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.DELETE_REGULAR;
+		String key = holder.getClassName()+"-"+SqlEnum.DELETE_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "DELETE FROM {0} WHERE {1}=?";
 			sql = MessageFormat.format(sql,
@@ -57,8 +63,8 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlDeleteManyMany(String nameTable, List<String> fieldNames) {
-		String key = nameTable+"-"+SqlEnum.DELETE_MANY_MANY;
+	public String getDeleteManyMany(String nameTable, List<String> fieldNames) {
+		String key = nameTable+"-"+SqlEnum.DELETE_MANY_MANY+"-"+fieldNames.get(0)+"-"+fieldNames.get(1);
 		if (!mapSql.containsKey(key)) {
 			String sql = "DELETE FROM {0} WHERE {1}=? AND {2}=?";
 			sql = MessageFormat.format(sql,
@@ -70,21 +76,21 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlUpdate(Class<?> clazz) {
+	public String getUpdateSingle(Class<?> clazz) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.UPDATE_REGULAR;
+		String key = holder.getClassName()+"-"+SqlEnum.UPDATE_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "UPDATE {0} SET {1} WHERE {2}=?";
 			sql = MessageFormat.format(sql,
 					holder.getClassName(),
-					generateFieldsSetting(holder.getNoIdFieldNames()),
+					stringFieldsToUpdate(holder.getNoIdFieldNames()),
 					holder.getIdName());
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);
 	}
 	
-	public String getSqlUpdateOtherId(Class<?> clazz, String nameOtherId) {
+	public String getUpdateOtherId(Class<?> clazz, String nameOtherId) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.UPDATE_OTHERID+"-"+nameOtherId;
 		if (!mapSql.containsKey(key)) {
@@ -98,13 +104,13 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlSelect(Class<?> clazz) {
+	public String getSelectSingle(Class<?> clazz) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.SELECT_REGULAR;
+		String key = holder.getClassName()+"-"+SqlEnum.SELECT_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "SELECT {0} FROM {1} WHERE {2}=?";
 			sql = MessageFormat.format(sql,
-					generateFieldsOnly(holder.getAllFieldNames()),
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
 					holder.getClassName(),
 					holder.getIdName());
 			mapSql.put(key, sql);
@@ -112,7 +118,7 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlSelectOtherId(Class<?> clazz, String nameOtherId) {
+	public String getSelectOtherId(Class<?> clazz, String nameOtherId) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.SELECT_OTHERID+"-"+nameOtherId;
 		if (!mapSql.containsKey(key)) {
@@ -126,13 +132,30 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlSelectWhere(Class<?> clazz, String where) {
+	public String getSelectManyMany(Class<?> clazz, String nameTable, List<String> fieldNames) {
+		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		String key = holder.getClassName()+"-"+SqlEnum.SELECT_MANY_MANY+"-"+nameTable;
+		if (!mapSql.containsKey(key)) {
+			String sql = "SELECT {0} FROM {1} WHERE EXISTS (SELECT 1 FROM {2} WHERE {3}={4} AND {5}=?)";
+			sql = MessageFormat.format(sql,
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
+					holder.getClassName(),
+					nameTable,
+					fieldNames.get(0),
+					fieldNames.get(1),
+					fieldNames.get(2));
+			mapSql.put(key, sql);
+		}
+		return mapSql.get(key);
+	}
+	
+	public String getSelectWhere(Class<?> clazz, String where) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.SELECT_WHERE+"-"+where;
 		if (!mapSql.containsKey(key)) {
 			String sql = "SELECT {0} FROM {1} WHERE {2}";
 			sql = MessageFormat.format(sql,
-					generateFieldsOnly(holder.getAllFieldNames()),
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
 					holder.getClassName(),
 					where);
 			mapSql.put(key, sql);
@@ -140,42 +163,42 @@ public class SqlHolder {
 		return mapSql.get(key);
 	}
 	
-	public String getSqlSelectAll(Class<?> clazz) {
+	public String getSelectAll(Class<?> clazz) {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.SELECT_ALL;
 		if (!mapSql.containsKey(key)) {
 			String sql = "SELECT {0} FROM {1}";
 			sql = MessageFormat.format(sql,
-					generateFieldsOnly(holder.getAllFieldNames()),
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
 					holder.getClassName());
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);
 	}
 	
-	protected String generateFieldsOnly(List<String> list) {
-		String generatedString = Util.listToStringWithSeparator(list, ",");
-		return generatedString;
+	protected String stringFieldsToEnumerate(List<String> list) {
+		String result = Util.listToStringWithSeparator(list, ",");
+		return result;
 	}
 
-	protected String generateFieldsSetting(List<String> list) {
-		String generatedString = Util.listToStringWithSeparator(list, "=?,") + "=?";
-		return generatedString;
+	protected String stringFieldsToUpdate(List<String> list) {
+		String result = Util.listToStringWithSeparator(list, "=?,") + "=?";
+		return result;
 	}
 
-	protected String generateValueMarks(List<String> list) {
-		String generatedString = new String(new char[list.size()]).replace("\0", ",?");
-		generatedString = generatedString.substring(1);
-		return generatedString;
+	protected String stringMarksToInsert(List<String> list) {
+		String result = new String(new char[list.size()]).replace("\0", ",?");
+		result = result.substring(1);
+		return result;
 	}
 
 	protected <P> String getValueToInsert(String className) {
-		String text = Property.getSingleton().getSqlDbId(Const.DbId.VALUE_TO_INSERT, className);
-		return text;
+		String result = Property.getIt().getSqlDbId(Const.DbId.VALUE_TO_INSERT, className);
+		return result;
 	}
 
 	protected <P> String getSelectLastInsert(String className) {
-		String text = Property.getSingleton().getSqlDbId(Const.DbId.SQL_LAST_INSERT, className);
-		return text;
+		String result = Property.getIt().getSqlDbId(Const.DbId.SQL_LAST_INSERT, className);
+		return result;
 	}
 }

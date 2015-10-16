@@ -1,4 +1,4 @@
-package uma.jayma.data.support;
+package uma.jayma.data.classinfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -626,12 +626,12 @@ public class DaoImpl<T> implements Dao<T> {
 	}
 
 	protected <P> String getValueToInsert(Class<P> clazz) {
-		String text = Property.getSingleton().getSqlDbId(Const.DbId.VALUE_TO_INSERT, clazz.getSimpleName());
+		String text = Property.getIt().getSqlDbId(Const.DbId.VALUE_TO_INSERT, clazz.getSimpleName());
 		return text;
 	}
 
 	protected <P> String getSelectLastInsert(Class<P> clazz) {
-		String text = Property.getSingleton().getSqlDbId(Const.DbId.SQL_LAST_INSERT, clazz.getSimpleName());
+		String text = Property.getIt().getSqlDbId(Const.DbId.SQL_LAST_INSERT, clazz.getSimpleName());
 		return text;
 	}
 

@@ -1,4 +1,4 @@
-package uma.jayma.data.support;
+package uma.jayma.data.classinfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -13,14 +13,13 @@ import uma.jayma.data.annotation.Many_Many;
 import uma.jayma.data.annotation.Many_One;
 import uma.jayma.data.annotation.One_Many;
 import uma.jayma.data.annotation.One_One;
-import uma.jayma.data.enums.AccessEnum;
 import uma.jayma.data.util.Util;
 
 public class ClassInfoHolder {
 
-	protected static Map<Class<?>, ClassInfo> mapClassInfo = new HashMap<>();
+	private static Map<Class<?>, ClassInfo> mapClassInfo = new HashMap<>();
 	
-	protected Class<?> clazz;
+	private Class<?> clazz;
 	
 	public ClassInfoHolder(Class<?> clazz) {
 		this.clazz = clazz;
