@@ -13,7 +13,7 @@ import uma.jayma.data.annotation.Many_Many;
 import uma.jayma.data.annotation.Many_One;
 import uma.jayma.data.annotation.One_Many;
 import uma.jayma.data.annotation.One_One;
-import uma.jayma.data.util.Util;
+import static uma.jayma.data.util.Util.*;
 
 public class ClassInfoHolder {
 
@@ -104,8 +104,8 @@ public class ClassInfoHolder {
 		for (Field field : allField.values()) {
 			String fieldName = field.getName();
 			try {
-				getMethod.put(fieldName, clazz.getMethod(AccessEnum.GET + Util.upperFirst(fieldName)));
-				setMethod.put(fieldName, clazz.getMethod(AccessEnum.SET + Util.upperFirst(fieldName)));
+				getMethod.put(fieldName, clazz.getMethod(AccessEnum.GET + upperFirst(fieldName)));
+				setMethod.put(fieldName, clazz.getMethod(AccessEnum.SET + upperFirst(fieldName)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

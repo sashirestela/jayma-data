@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import uma.jayma.data.classinfo.ClassInfoHolder;
-import uma.jayma.data.util.Const;
-import uma.jayma.data.util.Property;
-import uma.jayma.data.util.Util;
+import static uma.jayma.data.util.Util.*;
 
 public class SqlBuilder {
 	
@@ -177,28 +175,18 @@ public class SqlBuilder {
 	}
 	
 	protected String stringFieldsToEnumerate(List<String> list) {
-		String result = Util.listToStringWithSeparator(list, ",");
+		String result = listToStringWithSeparator(list, ",");
 		return result;
 	}
 
 	protected String stringFieldsToUpdate(List<String> list) {
-		String result = Util.listToStringWithSeparator(list, "=?,") + "=?";
+		String result = listToStringWithSeparator(list, "=?,") + "=?";
 		return result;
 	}
 
 	protected String stringMarksToInsert(List<String> list) {
 		String result = new String(new char[list.size()]).replace("\0", ",?");
 		result = result.substring(1);
-		return result;
-	}
-
-	protected <P> String getValueToInsert(String className) {
-		String result = Property.getIt().getSqlDbId(Const.DbId.VALUE_TO_INSERT, className);
-		return result;
-	}
-
-	protected <P> String getSelectLastInsert(String className) {
-		String result = Property.getIt().getSqlDbId(Const.DbId.SQL_LAST_INSERT, className);
 		return result;
 	}
 }

@@ -34,4 +34,14 @@ public class Util {
 		text = text.substring(0, text.length()-2) + "]";
 		return text;
 	}
+
+	public static String getValueToInsert(String className) {
+		String result = Property.getIt().getSqlDbId(Const.DbId.VALUE_TO_INSERT, className);
+		return result;
+	}
+
+	public static String getSelectLastInsert(String className) {
+		String result = Property.getIt().getSqlDbId(Const.DbId.SQL_LAST_INSERT, className);
+		return result;
+	}
 }
