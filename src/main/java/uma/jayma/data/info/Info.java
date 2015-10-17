@@ -1,10 +1,10 @@
-package uma.jayma.data.classinfo;
+package uma.jayma.data.info;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class ClassInfo {
+public class Info {
 
 	protected String className;
 	protected String idName;
@@ -15,7 +15,7 @@ public class ClassInfo {
 	protected Map<String, Method> getMethod;
 	protected Map<String, Method> setMethod;
 	
-	public ClassInfo() {}
+	public Info() {}
 
 	public String getClassName() {
 		return className;

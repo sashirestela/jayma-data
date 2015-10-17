@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uma.jayma.data.classinfo.ClassInfoHolder;
+import uma.jayma.data.info.InfoHolder;
+
 import static uma.jayma.data.util.Util.*;
 
 public class SqlBuilder {
@@ -21,7 +22,7 @@ public class SqlBuilder {
 	}
 	
 	public String getInsertSingle(Class<?> clazz) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.INSERT_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "INSERT INTO {0} ({1}) VALUES ({2},{3})";
@@ -49,7 +50,7 @@ public class SqlBuilder {
 	}
 	
 	public String getDeleteSingle(Class<?> clazz) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.DELETE_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "DELETE FROM {0} WHERE {1}=?";
@@ -75,7 +76,7 @@ public class SqlBuilder {
 	}
 	
 	public String getUpdateSingle(Class<?> clazz) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.UPDATE_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "UPDATE {0} SET {1} WHERE {2}=?";
@@ -89,7 +90,7 @@ public class SqlBuilder {
 	}
 	
 	public String getUpdateOtherId(Class<?> clazz, String nameOtherId) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.UPDATE_OTHERID+"-"+nameOtherId;
 		if (!mapSql.containsKey(key)) {
 			String sql = "UPDATE {0} SET {1}=? WHERE {2}=?";
@@ -103,7 +104,7 @@ public class SqlBuilder {
 	}
 	
 	public String getSelectSingle(Class<?> clazz) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.SELECT_SINGLE;
 		if (!mapSql.containsKey(key)) {
 			String sql = "SELECT {0} FROM {1} WHERE {2}=?";
@@ -116,22 +117,35 @@ public class SqlBuilder {
 		return mapSql.get(key);
 	}
 	
-	public String getSelectOtherId(Class<?> clazz, String nameOtherId) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.SELECT_OTHERID+"-"+nameOtherId;
+	public String getSelectAll(Class<?> clazz) {
+		InfoHolder holder = new InfoHolder(clazz);
+		String key = holder.getClassName()+"-"+SqlEnum.SELECT_ALL;
 		if (!mapSql.containsKey(key)) {
-			String sql = "SELECT {0} FROM {1} WHERE {2}=?";
+			String sql = "SELECT {0} FROM {1}";
 			sql = MessageFormat.format(sql,
-					nameOtherId,
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
+					holder.getClassName());
+			mapSql.put(key, sql);
+		}
+		return mapSql.get(key);
+	}
+	
+	public String getSelectWhere(Class<?> clazz, String where) {
+		InfoHolder holder = new InfoHolder(clazz);
+		String key = holder.getClassName()+"-"+SqlEnum.SELECT_WHERE+"-"+where;
+		if (!mapSql.containsKey(key)) {
+			String sql = "SELECT {0} FROM {1} WHERE {2}";
+			sql = MessageFormat.format(sql,
+					stringFieldsToEnumerate(holder.getAllFieldNames()),
 					holder.getClassName(),
-					holder.getIdName());
+					where);
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);
 	}
 	
 	public String getSelectManyMany(Class<?> clazz, String nameTable, List<String> fieldNames) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		String key = holder.getClassName()+"-"+SqlEnum.SELECT_MANY_MANY+"-"+nameTable;
 		if (!mapSql.containsKey(key)) {
 			String sql = "SELECT {0} FROM {1} WHERE EXISTS (SELECT 1 FROM {2} WHERE {3}={4} AND {5}=?)";
@@ -147,28 +161,15 @@ public class SqlBuilder {
 		return mapSql.get(key);
 	}
 	
-	public String getSelectWhere(Class<?> clazz, String where) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.SELECT_WHERE+"-"+where;
+	public String getSelectOtherId(Class<?> clazz, String nameOtherId) {
+		InfoHolder holder = new InfoHolder(clazz);
+		String key = holder.getClassName()+"-"+SqlEnum.SELECT_OTHERID+"-"+nameOtherId;
 		if (!mapSql.containsKey(key)) {
-			String sql = "SELECT {0} FROM {1} WHERE {2}";
+			String sql = "SELECT {0} FROM {1} WHERE {2}=?";
 			sql = MessageFormat.format(sql,
-					stringFieldsToEnumerate(holder.getAllFieldNames()),
+					nameOtherId,
 					holder.getClassName(),
-					where);
-			mapSql.put(key, sql);
-		}
-		return mapSql.get(key);
-	}
-	
-	public String getSelectAll(Class<?> clazz) {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
-		String key = holder.getClassName()+"-"+SqlEnum.SELECT_ALL;
-		if (!mapSql.containsKey(key)) {
-			String sql = "SELECT {0} FROM {1}";
-			sql = MessageFormat.format(sql,
-					stringFieldsToEnumerate(holder.getAllFieldNames()),
-					holder.getClassName());
+					holder.getIdName());
 			mapSql.put(key, sql);
 		}
 		return mapSql.get(key);

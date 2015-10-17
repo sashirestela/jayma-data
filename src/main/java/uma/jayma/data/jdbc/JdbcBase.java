@@ -12,10 +12,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
-import uma.jayma.data.classinfo.AccessEnum;
-import uma.jayma.data.classinfo.ClassInfoHolder;
+import uma.jayma.data.info.AccessEnum;
+import uma.jayma.data.info.InfoHolder;
 
 public class JdbcBase {
 	
@@ -111,8 +112,25 @@ public class JdbcBase {
 		return obj;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <P> void extractOutputForList(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
+		Class<P> clazz = (Class<P>)paramsOut[0];
+		List<String> fieldNames = (List<String>)paramsOut[1];
+		P ent = null;
+		try {
+			ent = clazz.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		setObjectFromResultSet(clazz, ent, fieldNames, rset);
+		if (obj == null) {
+			obj = new ArrayList<P>();
+		}
+		((List<P>)obj).add(ent);
+	}
+	
 	public <P> void setStatementFromObject(PreparedStatement pstm, Class<P> clazz, P obj, List<String> fieldNames) throws SQLException {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		int i = 1;
 		for (String fieldName : fieldNames) {
 			Object fieldValue = null;
@@ -131,7 +149,7 @@ public class JdbcBase {
 	}
 
 	public <P> void setObjectFromResultSet(Class<P> clazz, P obj, List<String> fieldNames, ResultSet rset) throws SQLException {
-		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		InfoHolder holder = new InfoHolder(clazz);
 		int i = 1;
 		for (String fieldName : fieldNames) {
 			if (rset.getObject(i) != null) {

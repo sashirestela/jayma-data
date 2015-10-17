@@ -1,4 +1,4 @@
-package uma.jayma.data.classinfo;
+package uma.jayma.data.info;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -15,16 +15,16 @@ import uma.jayma.data.annotation.One_Many;
 import uma.jayma.data.annotation.One_One;
 import static uma.jayma.data.util.Util.*;
 
-public class ClassInfoHolder {
+public class InfoHolder {
 
-	private static Map<Class<?>, ClassInfo> mapClassInfo = new HashMap<>();
+	private static Map<Class<?>, Info> mapClassInfo = new HashMap<>();
 	
 	private Class<?> clazz;
 	
-	public ClassInfoHolder(Class<?> clazz) {
+	public InfoHolder(Class<?> clazz) {
 		this.clazz = clazz;
 		if (!mapClassInfo.containsKey(clazz)) {
-			ClassInfo classInfo = loadClassInfoByReflection();
+			Info classInfo = loadClassInfoByReflection();
 			mapClassInfo.put(clazz, classInfo);
 		}
 	}
@@ -84,8 +84,8 @@ public class ClassInfoHolder {
 		return method;
 	}
 	
-	protected ClassInfo loadClassInfoByReflection() {
-		ClassInfo info = new ClassInfo();
+	protected Info loadClassInfoByReflection() {
+		Info info = new Info();
 		Field idField = null;
 		Map<String, Field> noIdField = new HashMap<>();
 		Map<String, Field> assocField = new HashMap<>();
