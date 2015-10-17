@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 public interface JdbcInputOutputProcessor extends JdbcInputProcessor {
 	
-	public void extractOutput(ResultSet rset, Object obj) throws SQLException;
+	public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException;
 }

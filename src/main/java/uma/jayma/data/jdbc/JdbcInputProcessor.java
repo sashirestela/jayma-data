@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 public interface JdbcInputProcessor {
 	
-	public void configInput(PreparedStatement pstm, Object[] params) throws SQLException;
+	public void configInput(PreparedStatement pstm, Object[] paramsIn) throws SQLException;
 }

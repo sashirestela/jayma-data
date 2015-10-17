@@ -64,6 +64,11 @@ public class ClassInfoHolder {
 		return listName;
 	}
 	
+	public Field getField(String fieldName) {
+		Field field = mapClassInfo.get(clazz).getAllField().get(fieldName);
+		return field;
+	}
+	
 	public Field getAssocField(String fieldName) {
 		Field field = mapClassInfo.get(clazz).getAssocField().get(fieldName);
 		return field;
@@ -105,7 +110,7 @@ public class ClassInfoHolder {
 			String fieldName = field.getName();
 			try {
 				getMethod.put(fieldName, clazz.getMethod(AccessEnum.GET + upperFirst(fieldName)));
-				setMethod.put(fieldName, clazz.getMethod(AccessEnum.SET + upperFirst(fieldName)));
+				setMethod.put(fieldName, clazz.getMethod(AccessEnum.SET + upperFirst(fieldName), field.getType()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -2,11 +2,15 @@ package uma.jayma.data.jdbc;
 
 import static uma.jayma.data.util.Util.getSelectLastInsert;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
 
@@ -77,16 +81,16 @@ public class JdbcBase {
 		return lastId;
 	}
 	
-	public Object executeSelect(Connection conn, String sql, Object[] params, JdbcInputOutputProcessor jdbcProcessor) {
+	public Object executeSelect(Connection conn, String sql, Object[] paramsIn, Object[] paramsOut, JdbcInputOutputProcessor jdbcProcessor) {
 		PreparedStatement pstm = null;
 		ResultSet rset = null;
 		Object obj = null;
 		try {
 			pstm = conn.prepareStatement(sql);
-			jdbcProcessor.configInput(pstm, params);
+			jdbcProcessor.configInput(pstm, paramsIn);
 			rset = pstm.executeQuery();
 			while (rset.next()) {
-				jdbcProcessor.extractOutput(rset, obj);
+				jdbcProcessor.extractOutput(rset, obj, paramsOut);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -107,10 +111,10 @@ public class JdbcBase {
 		return obj;
 	}
 	
-	public <P> void configPreparedStatement(PreparedStatement pstm, Class<P> clazz, P obj, List<String> listNames) throws SQLException {
+	public <P> void setStatementFromObject(PreparedStatement pstm, Class<P> clazz, P obj, List<String> fieldNames) throws SQLException {
 		ClassInfoHolder holder = new ClassInfoHolder(clazz);
 		int i = 1;
-		for (String fieldName : listNames) {
+		for (String fieldName : fieldNames) {
 			Object fieldValue = null;
 			try {
 				fieldValue = holder.getMethod(AccessEnum.GET, fieldName).invoke(obj);
@@ -122,6 +126,34 @@ public class JdbcBase {
 			} else {
 				pstm.setNull(i, Types.NULL);
 			}
-			i++;		}
+			i++;
+		}
+	}
+
+	public <P> void setObjectFromResultSet(Class<P> clazz, P obj, List<String> fieldNames, ResultSet rset) throws SQLException {
+		ClassInfoHolder holder = new ClassInfoHolder(clazz);
+		int i = 1;
+		for (String fieldName : fieldNames) {
+			if (rset.getObject(i) != null) {
+				try {
+					Class<?> type = holder.getField(fieldName).getType();
+					Method methodSet = holder.getMethod(AccessEnum.SET, fieldName);
+					if (type.equals(Date.class) || type.equals(Timestamp.class)) {
+						methodSet.invoke(obj, rset.getObject(i));
+					} else {
+						Constructor<?> constructor = type.getConstructor(new Class[] {String.class});
+						String value = rset.getObject(i).toString();
+						if (type.equals(Boolean.class)) {
+							methodSet.invoke(obj, constructor.newInstance(value.equals("1")||value.toLowerCase().equals("true")));
+						} else {
+							methodSet.invoke(obj, constructor.newInstance(value));
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			i++;
+		}
 	}
 }
