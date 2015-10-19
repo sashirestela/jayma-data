@@ -6,10 +6,10 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
-import uma.jayma.data.annotation.Many_Many;
-import uma.jayma.data.annotation.Many_One;
-import uma.jayma.data.annotation.One_Many;
-import uma.jayma.data.annotation.One_One;
+import uma.jayma.data.annot.ManyMany;
+import uma.jayma.data.annot.ManyOne;
+import uma.jayma.data.annot.OneMany;
+import uma.jayma.data.annot.OneOne;
 import uma.jayma.data.info.AccessEnum;
 import uma.jayma.data.info.InfoHolder;
 
@@ -40,13 +40,13 @@ public class OrmAssoc {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (Many_One.class.equals(annotation)) {
-			String nameSelfId = ((Many_One)annotation).selfJoinColumn();
+		if (ManyOne.class.equals(annotation.annotationType())) {
+			String nameSelfId = ((ManyOne)annotation).selfJoinColumn();
 			Long idOther = crud.selectOtherId(conn, clazz, nameSelfId, id);
 			objAssoc = crud.selectSingle(conn, clazzAssoc, idOther);
-		} else if (One_One.class.equals(annotation)) {
-			String nameFieldId = ((One_One)annotation).joinColumn();
-			if (((One_One)annotation).selfDriven()) {
+		} else if (OneOne.class.equals(annotation.annotationType())) {
+			String nameFieldId = ((OneOne)annotation).joinColumn();
+			if (((OneOne)annotation).selfDriven()) {
 				Long idOther = crud.selectOtherId(conn, clazz, nameFieldId, id);
 				objAssoc = crud.selectSingle(conn, clazzAssoc, idOther);
 			} else {
@@ -67,17 +67,17 @@ public class OrmAssoc {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (One_Many.class.equals(annotation)) {
-			String nameOtherId = ((One_Many)annotation).otherJoinColumn();
+		if (OneMany.class.equals(annotation.annotationType())) {
+			String nameOtherId = ((OneMany)annotation).otherJoinColumn();
 			lstAssoc = crud.selectWhere(conn, clazzAssoc, nameOtherId+"=?", id);
-		} else if (Many_Many.class.equals(annotation)) {
-			String nameEntity = ((Many_Many)annotation).joinEntity();
-			if (!((Many_Many)annotation).isClass()) {
+		} else if (ManyMany.class.equals(annotation.annotationType())) {
+			String nameEntity = ((ManyMany)annotation).joinEntity();
+			if (!((ManyMany)annotation).isClass()) {
 				InfoHolder holderAssoc = new InfoHolder(clazzAssoc);
 				List<String> fieldNames = Arrays.asList(
 						holderAssoc.getClassName()+"."+holderAssoc.getIdName(),
-						nameEntity+"."+holderAssoc.getIdName()+"."+holderAssoc.getClassName(),
-						nameEntity+"."+holder.getIdName()+"."+holder.getClassName());
+						nameEntity+"."+holderAssoc.getIdName()+holderAssoc.getClassName(),
+						nameEntity+"."+holder.getIdName()+holder.getClassName());
 				lstAssoc = crud.selectManyMany(conn, clazzAssoc, nameEntity, fieldNames, id);
 			} else {
 				// Association-Class
@@ -100,22 +100,22 @@ public class OrmAssoc {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (One_Many.class.equals(annotation)) {
-			String nameOtherId = ((One_Many)annotation).otherJoinColumn();
+		if (OneMany.class.equals(annotation.annotationType())) {
+			String nameOtherId = ((OneMany)annotation).otherJoinColumn();
 			crud.updateOtherId(conn, clazzOther, idOther, nameOtherId, (isInsert?id:null));
-		} else if (Many_One.class.equals(annotation)) {
-			String nameSelfId = ((Many_One)annotation).selfJoinColumn();
+		} else if (ManyOne.class.equals(annotation.annotationType())) {
+			String nameSelfId = ((ManyOne)annotation).selfJoinColumn();
 			crud.updateOtherId(conn, clazz, id, nameSelfId, (isInsert?idOther:null));
-		} else if (One_One.class.equals(annotation)) {
-			String nameFieldId = ((One_One)annotation).joinColumn();
-			if (((One_One)annotation).selfDriven()) {
+		} else if (OneOne.class.equals(annotation.annotationType())) {
+			String nameFieldId = ((OneOne)annotation).joinColumn();
+			if (((OneOne)annotation).selfDriven()) {
 				crud.updateOtherId(conn, clazz, id, nameFieldId, (isInsert?idOther:null));
 			} else {
 				crud.updateOtherId(conn, clazzOther, idOther, nameFieldId, (isInsert?id:null));
 			}
-		} else if (Many_Many.class.equals(annotation)) {
-			String nameEntity = ((Many_Many)annotation).joinEntity();
-			if (!((Many_Many)annotation).isClass()) {
+		} else if (ManyMany.class.equals(annotation.annotationType())) {
+			String nameEntity = ((ManyMany)annotation).joinEntity();
+			if (!((ManyMany)annotation).isClass()) {
 				List<String> fieldNames = Arrays.asList(holder.getIdName()+holder.getClassName(), holderOther.getIdName()+holderOther.getClassName());
 				List<Long> values = Arrays.asList(id, idOther);
 				if (isInsert) {

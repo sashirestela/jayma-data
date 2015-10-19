@@ -1,11 +1,11 @@
-package uma.jayma.data.sample;
+package uma.jayma.data.sample.domain;
 
 import java.util.List;
 
-import uma.jayma.data.annotation.Identifier;
-import uma.jayma.data.annotation.Many_Many;
-import uma.jayma.data.annotation.Many_One;
-import uma.jayma.data.annotation.One_One;
+import uma.jayma.data.annot.Identifier;
+import uma.jayma.data.annot.ManyMany;
+import uma.jayma.data.annot.ManyOne;
+import uma.jayma.data.annot.OneOne;
 
 public class Empleado {
 
@@ -18,13 +18,13 @@ public class Empleado {
 
 	protected Long rowVersion = null;
 
-	@Many_One(selfJoinColumn="idOficina")
+	@ManyOne(selfJoinColumn="idOficina")
 	protected Oficina oficina = null;
 
-	@One_One(joinColumn="idEmpleado", selfDriven=false)
+	@OneOne(joinColumn="idEmpleado", selfDriven=false)
 	protected Direccion direccion = null;
 
-	@Many_Many(joinEntity="Asignacion", isClass=false)
+	@ManyMany(joinEntity="Asignacion", isClass=false)
 	protected List<Proyecto> proyectos = null;
 
 	public Empleado() {

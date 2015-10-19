@@ -114,10 +114,11 @@ public class JdbcBase {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <P> void extractOutputForList(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-		Class<P> clazz = (Class<P>)paramsOut[0];
-		List<String> fieldNames = (List<String>)paramsOut[1];
+	public <P> List<P> extractOutputForList(ResultSet rset, Object[] paramsOut) throws SQLException {
+		List<P> list = null;
 		while (rset.next()) {
+			Class<P> clazz = (Class<P>)paramsOut[0];
+			List<String> fieldNames = (List<String>)paramsOut[1];
 			P ent = null;
 			try {
 				ent = clazz.newInstance();
@@ -125,11 +126,12 @@ public class JdbcBase {
 				e.printStackTrace();
 			}
 			setObjectFromResultSet(clazz, ent, fieldNames, rset);
-			if (obj == null) {
-				obj = new ArrayList<P>();
+			if (list == null) {
+				list = new ArrayList<P>();
 			}
-			((List<P>) obj).add(ent);
+			list.add(ent);
 		}
+		return list;
 	}
 	
 	public <P> void setStatementFromObject(PreparedStatement pstm, Class<P> clazz, P obj, List<String> fieldNames) throws SQLException {

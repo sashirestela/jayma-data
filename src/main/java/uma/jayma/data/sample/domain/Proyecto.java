@@ -1,9 +1,9 @@
-package uma.jayma.data.sample;
+package uma.jayma.data.sample.domain;
 
 import java.util.List;
 
-import uma.jayma.data.annotation.Identifier;
-import uma.jayma.data.annotation.Many_Many;
+import uma.jayma.data.annot.Identifier;
+import uma.jayma.data.annot.ManyMany;
 
 public class Proyecto {
 
@@ -14,7 +14,7 @@ public class Proyecto {
 
 	protected Long rowVersion = null;
 
-	@Many_Many(joinEntity="Asignacion", isClass=false)
+	@ManyMany(joinEntity="Asignacion", isClass=false)
 	protected List<Empleado> empleados = null;
 
 	public Proyecto() {

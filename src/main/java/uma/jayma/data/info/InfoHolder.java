@@ -9,11 +9,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import uma.jayma.data.annotation.Identifier;
-import uma.jayma.data.annotation.Many_Many;
-import uma.jayma.data.annotation.Many_One;
-import uma.jayma.data.annotation.One_Many;
-import uma.jayma.data.annotation.One_One;
+import uma.jayma.data.annot.Identifier;
+import uma.jayma.data.annot.ManyMany;
+import uma.jayma.data.annot.ManyOne;
+import uma.jayma.data.annot.OneMany;
+import uma.jayma.data.annot.OneOne;
 import static uma.jayma.data.util.Util.*;
 
 public class InfoHolder {
@@ -130,10 +130,10 @@ public class InfoHolder {
 	@SuppressWarnings("unchecked")
 	protected boolean isAssociation(Field field) {
 		Class<?>[] assocAnnotations = {
-			One_Many.class,
-			Many_One.class,
-			One_One.class,
-			Many_Many.class
+			OneMany.class,
+			ManyOne.class,
+			OneOne.class,
+			ManyMany.class
 		};
 		boolean is = false;
 		for (Class<?> annotation : assocAnnotations) {

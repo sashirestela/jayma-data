@@ -22,8 +22,7 @@ public class Util {
 		String text = "[";
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
-			if (Modifier.isProtected(field.getModifiers()) &&
-			(field.getType().isPrimitive() || field.getType().getName().substring(0, 4).equals("java"))) {
+			if (isScalarType(field)) {
 				try {
 					text += field.getName() + "=" + obj.getClass().getMethod("get" + upperFirst(field.getName())).invoke(obj) + "; ";
 				} catch (Exception e) {
@@ -33,6 +32,17 @@ public class Util {
 		}
 		text = text.substring(0, text.length()-2) + "]";
 		return text;
+	}
+	
+	private static boolean isScalarType(Field field) {
+		boolean isScalar =
+				Modifier.isProtected(field.getModifiers()) &&
+				(field.getType().isPrimitive() ||
+						(field.getType().getName().substring(0, 4).equals("java") &&
+								!field.getType().isInterface()
+						)
+				);
+		return isScalar;
 	}
 
 	public static String getValueToInsert(String className) {

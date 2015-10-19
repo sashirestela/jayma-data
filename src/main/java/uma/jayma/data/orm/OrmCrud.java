@@ -125,15 +125,19 @@ public class OrmCrud {
 				pstm.setObject(1, id);
 			}
 			
-			public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-				Class<P> clazz = (Class<P>)paramsOut[0];
-				List<String> fieldNames = (List<String>)paramsOut[1];
-				try {
-					obj = clazz.newInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
+			public Object extractOutput(ResultSet rset, Object[] paramsOut) throws SQLException {
+				P obj = null;
+				if (rset.next()) {
+					Class<P> clazz = (Class<P>)paramsOut[0];
+					List<String> fieldNames = (List<String>)paramsOut[1];
+					try {
+						obj = clazz.newInstance();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					JdbcBase.getIt().setObjectFromResultSet(clazz, obj, fieldNames, rset);
 				}
-				JdbcBase.getIt().setObjectFromResultSet(clazz, (P)obj, fieldNames, rset);
+				return obj;
 			}
 		});
 		return obj;
@@ -151,8 +155,8 @@ public class OrmCrud {
 			public void configInput(PreparedStatement pstm, Object[] paramsIn) throws SQLException {
 			}
 			
-			public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-				JdbcBase.getIt().extractOutputForList(rset, obj, paramsOut);
+			public Object extractOutput(ResultSet rset, Object[] paramsOut) throws SQLException {
+				return JdbcBase.getIt().extractOutputForList(rset, paramsOut);
 			}
 		});
 		return list;
@@ -174,8 +178,8 @@ public class OrmCrud {
 				}
 			}
 			
-			public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-				JdbcBase.getIt().extractOutputForList(rset, obj, paramsOut);
+			public Object extractOutput(ResultSet rset, Object[] paramsOut) throws SQLException {
+				return JdbcBase.getIt().extractOutputForList(rset, paramsOut);
 			}
 		});
 		return list;
@@ -195,8 +199,8 @@ public class OrmCrud {
 				pstm.setObject(1, id);
 			}
 			
-			public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-				JdbcBase.getIt().extractOutputForList(rset, obj, paramsOut);
+			public Object extractOutput(ResultSet rset, Object[] paramsOut) throws SQLException {
+				return JdbcBase.getIt().extractOutputForList(rset, paramsOut);
 			}
 		});
 		return list;
@@ -214,8 +218,12 @@ public class OrmCrud {
 				pstm.setObject(1, id);
 			}
 			
-			public void extractOutput(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
-				obj = new Long(rset.getObject(1).toString());
+			public Object extractOutput(ResultSet rset, Object[] paramsOut) throws SQLException {
+				Long otherId = null;
+				if (rset.next()) {
+					otherId = new Long(rset.getObject(1).toString());
+				}
+				return otherId;
 			}
 		});
 		return otherId;

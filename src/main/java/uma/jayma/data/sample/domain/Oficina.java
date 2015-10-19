@@ -1,9 +1,9 @@
-package uma.jayma.data.sample;
+package uma.jayma.data.sample.domain;
 
 import java.util.List;
 
-import uma.jayma.data.annotation.Identifier;
-import uma.jayma.data.annotation.One_Many;
+import uma.jayma.data.annot.Identifier;
+import uma.jayma.data.annot.OneMany;
 
 public class Oficina {
 
@@ -14,7 +14,7 @@ public class Oficina {
 
 	protected Long rowVersion = null;
 
-	@One_Many(otherJoinColumn="idOficina")
+	@OneMany(otherJoinColumn="idOficina")
 	protected List<Empleado> empleados = null;
 
 	public Oficina() {

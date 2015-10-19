@@ -1,4 +1,4 @@
-package uma.jayma.data.annotation;
+package uma.jayma.data.annot;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface One_Many {
+public @interface ManyOne {
 
-	String otherJoinColumn();
-
-	boolean isComposite() default false;
+	String selfJoinColumn();
 
 }

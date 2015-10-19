@@ -1,28 +1,24 @@
-package uma.jayma.data;
+package uma.jayma.data.sample;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
-import uma.jayma.data.sample.Direccion;
-import uma.jayma.data.sample.DireccionDao;
-import uma.jayma.data.sample.DireccionDaoImpl;
-import uma.jayma.data.sample.Empleado;
-import uma.jayma.data.sample.EmpleadoDao;
-import uma.jayma.data.sample.EmpleadoDaoImpl;
-import uma.jayma.data.sample.Oficina;
-import uma.jayma.data.sample.OficinaDao;
-import uma.jayma.data.sample.OficinaDaoImpl;
-import uma.jayma.data.sample.Proyecto;
-import uma.jayma.data.sample.ProyectoDao;
-import uma.jayma.data.sample.ProyectoDaoImpl;
+import uma.jayma.data.sample.domain.Direccion;
+import uma.jayma.data.sample.domain.DireccionDao;
+import uma.jayma.data.sample.domain.DireccionDaoImpl;
+import uma.jayma.data.sample.domain.Empleado;
+import uma.jayma.data.sample.domain.EmpleadoDao;
+import uma.jayma.data.sample.domain.EmpleadoDaoImpl;
+import uma.jayma.data.sample.domain.Oficina;
+import uma.jayma.data.sample.domain.OficinaDao;
+import uma.jayma.data.sample.domain.OficinaDaoImpl;
+import uma.jayma.data.sample.domain.Proyecto;
+import uma.jayma.data.sample.domain.ProyectoDao;
+import uma.jayma.data.sample.domain.ProyectoDaoImpl;
 import uma.jayma.data.util.Util;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
 	public static void main( String[] args )
@@ -33,6 +29,11 @@ public class App
 		final String dbUrl = "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql391462";
 		final String dbUsr = "sql391462";
 		final String dbPwd = "cL4!mQ1*";
+		
+//		final String dbDrv = "com.mysql.jdbc.Driver";
+//		final String dbUrl = "jdbc:mysql://localhost:3306/jayma";
+//		final String dbUsr = "root";
+//		final String dbPwd = "root";
 
 		try {
 			Class.forName(dbDrv);
@@ -70,7 +71,7 @@ public class App
 			ofi1.setId(ofiDao.create(ofi1));
 			ofi2.setId(ofiDao.create(ofi2));
 
-			List<Oficina> ofiList = ofiDao.fetchAll();
+			List<Oficina> ofiList = ofiDao.selectAll();
 			System.out.println("\nOficinas");
 			for (Oficina ofi : ofiList) {
 				System.out.println(Util.toString(ofi));
@@ -94,7 +95,7 @@ public class App
 			pro2.setId(proDao.create(pro2));
 			pro3.setId(proDao.create(pro3));
 
-			List<Proyecto> proList = proDao.fetchAll();
+			List<Proyecto> proList = proDao.selectAll();
 			System.out.println("\nProyectos");
 			for (Proyecto pro : proList) {
 				System.out.println(Util.toString(pro));
@@ -127,7 +128,7 @@ public class App
 			emp3.setId(empDao.create(emp3));
 			emp4.setId(empDao.create(emp4));
 
-			List<Empleado> empList = empDao.fetchAll();
+			List<Empleado> empList = empDao.selectAll();
 			System.out.println("\nEmpleados");
 			for (Empleado emp : empList) {
 				System.out.println(Util.toString(emp));
@@ -160,7 +161,7 @@ public class App
 			dir3.setId(dirDao.create(dir3));
 			dir4.setId(dirDao.create(dir4));
 
-			List<Direccion> dirList = dirDao.fetchAll();
+			List<Direccion> dirList = dirDao.selectAll();
 			System.out.println("\nDirecciones");
 			for (Direccion dir : dirList) {
 				System.out.println(Util.toString(dir));
@@ -168,53 +169,53 @@ public class App
 
 			// Seteo de Asociaciones
 
-			ofiDao.saveLink(ofi1, "empleados", emp1);
-			ofiDao.saveLink(ofi1, "empleados", emp3);
+			ofiDao.createAssoc(ofi1, "empleados", emp1);
+			ofiDao.createAssoc(ofi1, "empleados", emp3);
 
-			empDao.saveLink(emp2, "oficina", ofi2);
-			empDao.saveLink(emp4, "oficina", ofi2);
+			empDao.createAssoc(emp2, "oficina", ofi2);
+			empDao.createAssoc(emp4, "oficina", ofi2);
 
-			proDao.saveLink(pro1, "empleados", emp1);
-			proDao.saveLink(pro1, "empleados", emp2);
-			proDao.saveLink(pro1, "empleados", emp3);
-			proDao.saveLink(pro2, "empleados", emp2);
-			proDao.saveLink(pro2, "empleados", emp3);
-			proDao.saveLink(pro2, "empleados", emp4);
-			proDao.saveLink(pro3, "empleados", emp1);
-			proDao.saveLink(pro3, "empleados", emp2);
-			proDao.saveLink(pro3, "empleados", emp3);
-			proDao.saveLink(pro3, "empleados", emp4);
+			proDao.createAssoc(pro1, "empleados", emp1);
+			proDao.createAssoc(pro1, "empleados", emp2);
+			proDao.createAssoc(pro1, "empleados", emp3);
+			proDao.createAssoc(pro2, "empleados", emp2);
+			proDao.createAssoc(pro2, "empleados", emp3);
+			proDao.createAssoc(pro2, "empleados", emp4);
+			proDao.createAssoc(pro3, "empleados", emp1);
+			proDao.createAssoc(pro3, "empleados", emp2);
+			proDao.createAssoc(pro3, "empleados", emp3);
+			proDao.createAssoc(pro3, "empleados", emp4);
 
-			empDao.saveLink(emp1, "direccion", dir1);
-			empDao.saveLink(emp2, "direccion", dir2);
-			empDao.saveLink(emp3, "direccion", dir3);
-			empDao.saveLink(emp4, "direccion", dir4);
+			empDao.createAssoc(emp1, "direccion", dir1);
+			empDao.createAssoc(emp2, "direccion", dir2);
+			empDao.createAssoc(emp3, "direccion", dir3);
+			empDao.createAssoc(emp4, "direccion", dir4);
 
 			// Display de Asociaciones
 
-			ofi1.setEmpleados(ofiDao.fetchLinkMany(ofi1, "empleados", Empleado.class));
+			ofi1.setEmpleados(ofiDao.selectAssocMany(ofi1, "empleados", Empleado.class));
 			System.out.println("\nEmpleados de la Oficina: "+Util.toString(ofi1));
 			for (Empleado emp : ofi1.getEmpleados()) {
-				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
+				emp.setDireccion(empDao.selectAssocOne(emp, "direccion", Direccion.class));
 				System.out.println(Util.toString(emp));
 				System.out.println("\tDireccion: "+Util.toString(emp.getDireccion()));
 			}
 
-			ofi2.setEmpleados(ofiDao.fetchLinkMany(ofi2, "empleados", Empleado.class));
+			ofi2.setEmpleados(ofiDao.selectAssocMany(ofi2, "empleados", Empleado.class));
 			System.out.println("\nEmpleados de la Oficina: "+Util.toString(ofi2));
 			for (Empleado emp : ofi2.getEmpleados()) {
-				emp.setDireccion(empDao.fetchLinkOne(emp, "direccion", Direccion.class));
+				emp.setDireccion(empDao.selectAssocOne(emp, "direccion", Direccion.class));
 				System.out.println(Util.toString(emp));
 				System.out.println("\tDireccion: "+Util.toString(emp.getDireccion()));
 			}
 
-			pro1.setEmpleados(proDao.fetchLinkMany(pro1, "empleados", Empleado.class));
+			pro1.setEmpleados(proDao.selectAssocMany(pro1, "empleados", Empleado.class));
 			System.out.println("\nEmpleados del Proyecto: "+Util.toString(pro1));
 			for (Empleado emp : pro1.getEmpleados()) {
 				System.out.println(Util.toString(emp));
 			}
 
-			emp3.setProyectos(empDao.fetchLinkMany(emp3, "proyectos", Proyecto.class));
+			emp3.setProyectos(empDao.selectAssocMany(emp3, "proyectos", Proyecto.class));
 			System.out.println("\nProyectos del Empleado: "+Util.toString(emp3));
 			for (Proyecto pro : emp3.getProyectos()) {
 				System.out.println(Util.toString(pro));

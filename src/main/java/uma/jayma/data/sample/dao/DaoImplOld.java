@@ -1,4 +1,4 @@
-package uma.jayma.data.dao.impl;
+package uma.jayma.data.sample.dao;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -18,23 +18,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import uma.jayma.data.annotation.Identifier;
-import uma.jayma.data.annotation.Many_Many;
-import uma.jayma.data.annotation.Many_One;
-import uma.jayma.data.annotation.One_Many;
-import uma.jayma.data.annotation.One_One;
-import uma.jayma.data.dao.Dao;
+import uma.jayma.data.annot.Identifier;
+import uma.jayma.data.annot.ManyMany;
+import uma.jayma.data.annot.ManyOne;
+import uma.jayma.data.annot.OneMany;
+import uma.jayma.data.annot.OneOne;
 import uma.jayma.data.util.Const;
 import uma.jayma.data.util.Property;
 import uma.jayma.data.util.Util;
 
-public class DaoImpl<T> implements Dao<T> {
+public class DaoImplOld<T> implements Dao<T> {
 
 	protected Class<T> clazz = null;
 	protected Connection conn = null;
 
 	@SuppressWarnings("unchecked")
-	public DaoImpl() {
+	public DaoImplOld() {
 		ParameterizedType pt = (ParameterizedType)getClass().getGenericSuperclass();
 		this.clazz = (Class<T>)pt.getActualTypeArguments()[0];
 	}
@@ -61,25 +60,25 @@ public class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public T fetch(Long id) {
+	public T select(Long id) {
 		T obj = selectGeneric(this.clazz, id);
 		return obj;
 	}
 
 	@Override
-	public List<T> fetchWhere(String where, Object... params) {
+	public List<T> selectWhere(String where, Object... params) {
 		List<T> list = selectGeneric(this.clazz, where, params);
 		return list;
 	}
 
 	@Override
-	public List<T> fetchAll() {
+	public List<T> selectAll() {
 		List<T> list = selectAllGeneric(this.clazz);
 		return list;
 	}
 
 	@Override
-	public <P> void saveLink(T obj, String linkName, P otherObj) {
+	public <P> void createAssoc(T obj, String linkName, P otherObj) {
 		Field field = null;
 		Method gettingMettod = null;
 		try {
@@ -89,8 +88,8 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		Class<?> clazzOther = otherObj.getClass();
 
-		if (field.isAnnotationPresent(One_Many.class)) {
-			String nameOtherId = field.getAnnotation(One_Many.class).otherJoinColumn();
+		if (field.isAnnotationPresent(OneMany.class)) {
+			String nameOtherId = field.getAnnotation(OneMany.class).otherJoinColumn();
 			Long id = null;
 			Long idOther = null;
 			try {
@@ -102,8 +101,8 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(clazzOther, idOther, nameOtherId, id);
-		} else if (field.isAnnotationPresent(Many_One.class)) {
-			String nameSelfId = field.getAnnotation(Many_One.class).selfJoinColumn();
+		} else if (field.isAnnotationPresent(ManyOne.class)) {
+			String nameSelfId = field.getAnnotation(ManyOne.class).selfJoinColumn();
 			Long id = null;
 			Long idOther = null;
 			try {
@@ -115,8 +114,8 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(this.clazz, id, nameSelfId, idOther);
-		} else if (field.isAnnotationPresent(One_One.class)) {
-			String nameFieldId = field.getAnnotation(One_One.class).joinColumn();
+		} else if (field.isAnnotationPresent(OneOne.class)) {
+			String nameFieldId = field.getAnnotation(OneOne.class).joinColumn();
 			Long id = null;
 			Long idOther = null;
 			try {
@@ -127,14 +126,14 @@ public class DaoImpl<T> implements Dao<T> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (field.getAnnotation(One_One.class).selfDriven()) {
+			if (field.getAnnotation(OneOne.class).selfDriven()) {
 				updateOtherId(this.clazz, id, nameFieldId, idOther);
 			} else {
 				updateOtherId(clazzOther, idOther, nameFieldId, id);
 			}
-		} else if (field.isAnnotationPresent(Many_Many.class)) {
-			String nameEntity = field.getAnnotation(Many_Many.class).joinEntity();
-			if (!field.getAnnotation(Many_Many.class).isClass()) {
+		} else if (field.isAnnotationPresent(ManyMany.class)) {
+			String nameEntity = field.getAnnotation(ManyMany.class).joinEntity();
+			if (!field.getAnnotation(ManyMany.class).isClass()) {
 				Long id = null;
 				Long idOther = null;
 				try {
@@ -155,7 +154,7 @@ public class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public <P> void deleteLink(T obj, String linkName, P otherObj) {
+	public <P> void deleteAssoc(T obj, String linkName, P otherObj) {
 		Field field = null;
 		Method gettingMettod = null;
 		try {
@@ -163,9 +162,9 @@ public class DaoImpl<T> implements Dao<T> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (field.isAnnotationPresent(One_Many.class)) {
+		if (field.isAnnotationPresent(OneMany.class)) {
 			Class<?> clazzOther = otherObj.getClass();
-			String nameOtherId = field.getAnnotation(One_Many.class).otherJoinColumn();
+			String nameOtherId = field.getAnnotation(OneMany.class).otherJoinColumn();
 			Long idOther = null;
 			try {
 				gettingMettod = clazzOther.getMethod("get"+Util.upperFirst(getIdFieldName(clazzOther)));
@@ -174,8 +173,8 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(clazzOther, idOther, nameOtherId, null);
-		} else if (field.isAnnotationPresent(Many_One.class)) {
-			String nameSelfId = field.getAnnotation(Many_One.class).selfJoinColumn();
+		} else if (field.isAnnotationPresent(ManyOne.class)) {
+			String nameSelfId = field.getAnnotation(ManyOne.class).selfJoinColumn();
 			Long id = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+Util.upperFirst(getIdFieldName(this.clazz)));
@@ -184,9 +183,9 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			updateOtherId(this.clazz, id, nameSelfId, null);
-		} else if (field.isAnnotationPresent(One_One.class)) {
+		} else if (field.isAnnotationPresent(OneOne.class)) {
 			Class<?> clazzOther = otherObj.getClass();
-			String nameFieldId = field.getAnnotation(One_One.class).joinColumn();
+			String nameFieldId = field.getAnnotation(OneOne.class).joinColumn();
 			Long id = null;
 			Long idOther = null;
 			try {
@@ -197,15 +196,15 @@ public class DaoImpl<T> implements Dao<T> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (field.getAnnotation(One_One.class).selfDriven()) {
+			if (field.getAnnotation(OneOne.class).selfDriven()) {
 				updateOtherId(this.clazz, id, nameFieldId, null);
 			} else {
 				updateOtherId(clazzOther, idOther, nameFieldId, null);
 			}
-		} else if (field.isAnnotationPresent(Many_Many.class)) {
+		} else if (field.isAnnotationPresent(ManyMany.class)) {
 			Class<?> clazzOther = otherObj.getClass();
-			String nameEntity = field.getAnnotation(Many_Many.class).joinEntity();
-			if (!field.getAnnotation(Many_Many.class).isClass()) {
+			String nameEntity = field.getAnnotation(ManyMany.class).joinEntity();
+			if (!field.getAnnotation(ManyMany.class).isClass()) {
 				Long id = null;
 				Long idOther = null;
 				try {
@@ -226,7 +225,7 @@ public class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public <P> P fetchLinkOne(T obj, String linkName, Class<P> clazzLink) {
+	public <P> P selectAssocOne(T obj, String linkName, Class<P> clazzLink) {
 		P objLink = null;
 		Field field = null;
 		Method gettingMettod = null;
@@ -237,8 +236,8 @@ public class DaoImpl<T> implements Dao<T> {
 		}
 		//Class<?> clazzLink = field.getType();
 
-		if (field.isAnnotationPresent(Many_One.class)) {
-			String nameSelfId = field.getAnnotation(Many_One.class).selfJoinColumn();
+		if (field.isAnnotationPresent(ManyOne.class)) {
+			String nameSelfId = field.getAnnotation(ManyOne.class).selfJoinColumn();
 			Long id = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+Util.upperFirst(getIdFieldName(this.clazz)));
@@ -248,8 +247,8 @@ public class DaoImpl<T> implements Dao<T> {
 			}
 			Long idOther = selectOtherId(this.clazz, nameSelfId, id);
 			objLink = (P)selectGeneric(clazzLink, idOther);
-		} else if (field.isAnnotationPresent(One_One.class)) {
-			String nameFieldId = field.getAnnotation(One_One.class).joinColumn();
+		} else if (field.isAnnotationPresent(OneOne.class)) {
+			String nameFieldId = field.getAnnotation(OneOne.class).joinColumn();
 			Long id = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+Util.upperFirst(getIdFieldName(this.clazz)));
@@ -257,7 +256,7 @@ public class DaoImpl<T> implements Dao<T> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (field.getAnnotation(One_One.class).selfDriven()) {
+			if (field.getAnnotation(OneOne.class).selfDriven()) {
 				Long idOther = selectOtherId(this.clazz, nameFieldId, id);
 				objLink = (P)selectGeneric(clazzLink, idOther);
 			} else {
@@ -268,7 +267,7 @@ public class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public <P> List<P> fetchLinkMany(T obj, String linkName, Class<P> clazzLink) {
+	public <P> List<P> selectAssocMany(T obj, String linkName, Class<P> clazzLink) {
 		List<P> lstLink = null;
 		Field field = null;
 		Method gettingMettod = null;
@@ -280,8 +279,8 @@ public class DaoImpl<T> implements Dao<T> {
 		//ParameterizedType pt = (ParameterizedType)field.getGenericType();
 		//Class<?> clazzLink = (Class<?>)pt.getActualTypeArguments()[0];
 
-		if (field.isAnnotationPresent(One_Many.class)) {
-			String nameOtherId = field.getAnnotation(One_Many.class).otherJoinColumn();
+		if (field.isAnnotationPresent(OneMany.class)) {
+			String nameOtherId = field.getAnnotation(OneMany.class).otherJoinColumn();
 			Long idOther = null;
 			try {
 				gettingMettod = this.clazz.getMethod("get"+Util.upperFirst(getIdFieldName(this.clazz)));
@@ -290,9 +289,9 @@ public class DaoImpl<T> implements Dao<T> {
 				e.printStackTrace();
 			}
 			lstLink = (List<P>)selectGeneric(clazzLink, nameOtherId+"=?", idOther);
-		} else if (field.isAnnotationPresent(Many_Many.class)) {
-			String nameEntity = field.getAnnotation(Many_Many.class).joinEntity();
-			if (!field.getAnnotation(Many_Many.class).isClass()) {
+		} else if (field.isAnnotationPresent(ManyMany.class)) {
+			String nameEntity = field.getAnnotation(ManyMany.class).joinEntity();
+			if (!field.getAnnotation(ManyMany.class).isClass()) {
 				Long id = null;
 				try {
 					gettingMettod = this.clazz.getMethod("get"+Util.upperFirst(getIdFieldName(this.clazz)));
@@ -669,10 +668,10 @@ public class DaoImpl<T> implements Dao<T> {
 	@SuppressWarnings("unchecked")
 	protected boolean isAssociation(Field field) {
 		Class<?>[] assocAnnotations = {
-			One_Many.class,
-			Many_One.class,
-			One_One.class,
-			Many_Many.class
+			OneMany.class,
+			ManyOne.class,
+			OneOne.class,
+			ManyMany.class
 		};
 		boolean is = false;
 		for (Class<?> annotation : assocAnnotations) {
