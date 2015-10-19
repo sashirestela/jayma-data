@@ -1,4 +1,4 @@
-package uma.jayma.data;
+package uma.jayma.data.orm;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,9 @@ import uma.jayma.data.jdbc.JdbcInputOutputProcessor;
 import uma.jayma.data.jdbc.JdbcInputProcessor;
 import uma.jayma.data.sql.SqlBuilder;
 
-public class ORMapper {
+public class OrmCrud {
+	
+	public OrmCrud() {}
 
 	@SuppressWarnings("unchecked")
 	public <P> Long insertSingle(Connection conn, Class<P> clazz, P obj) {
@@ -139,7 +141,7 @@ public class ORMapper {
 	
 	@SuppressWarnings("unchecked")
 	public <P> List<P> selectAll(Connection conn, Class<P> clazz) {
-		String sql = SqlBuilder.getIt().getSelectSingle(clazz);
+		String sql = SqlBuilder.getIt().getSelectAll(clazz);
 		InfoHolder holder = new InfoHolder(clazz);
 		Object[] paramsIn = {};
 		Object[] paramsOut = {clazz, holder.getAllFieldNames()};

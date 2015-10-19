@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,9 +88,9 @@ public class InfoHolder {
 	protected Info loadClassInfoByReflection() {
 		Info info = new Info();
 		Field idField = null;
-		Map<String, Field> noIdField = new HashMap<>();
-		Map<String, Field> assocField = new HashMap<>();
-		Map<String, Field> allField = new HashMap<>();
+		Map<String, Field> noIdField = new LinkedHashMap<>();
+		Map<String, Field> assocField = new LinkedHashMap<>();
+		Map<String, Field> allField = new LinkedHashMap<>();
 		for (Field field : clazz.getDeclaredFields()) {
 			String fieldName = field.getName();
 			if (field.isAnnotationPresent(Identifier.class)) {
@@ -104,8 +105,8 @@ public class InfoHolder {
 				}
 			}
 		}
-		Map<String, Method> getMethod = new HashMap<>();
-		Map<String, Method> setMethod = new HashMap<>();
+		Map<String, Method> getMethod = new LinkedHashMap<>();
+		Map<String, Method> setMethod = new LinkedHashMap<>();
 		for (Field field : allField.values()) {
 			String fieldName = field.getName();
 			try {

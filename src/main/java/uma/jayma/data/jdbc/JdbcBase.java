@@ -90,9 +90,10 @@ public class JdbcBase {
 			pstm = conn.prepareStatement(sql);
 			jdbcProcessor.configInput(pstm, paramsIn);
 			rset = pstm.executeQuery();
-			while (rset.next()) {
-				jdbcProcessor.extractOutput(rset, obj, paramsOut);
-			}
+//			while (rset.next()) {
+//				jdbcProcessor.extractOutput(rset, obj, paramsOut);
+//			}
+			obj = jdbcProcessor.extractOutput(rset, paramsOut);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -116,17 +117,19 @@ public class JdbcBase {
 	public <P> void extractOutputForList(ResultSet rset, Object obj, Object[] paramsOut) throws SQLException {
 		Class<P> clazz = (Class<P>)paramsOut[0];
 		List<String> fieldNames = (List<String>)paramsOut[1];
-		P ent = null;
-		try {
-			ent = clazz.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
+		while (rset.next()) {
+			P ent = null;
+			try {
+				ent = clazz.newInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			setObjectFromResultSet(clazz, ent, fieldNames, rset);
+			if (obj == null) {
+				obj = new ArrayList<P>();
+			}
+			((List<P>) obj).add(ent);
 		}
-		setObjectFromResultSet(clazz, ent, fieldNames, rset);
-		if (obj == null) {
-			obj = new ArrayList<P>();
-		}
-		((List<P>)obj).add(ent);
 	}
 	
 	public <P> void setStatementFromObject(PreparedStatement pstm, Class<P> clazz, P obj, List<String> fieldNames) throws SQLException {
