@@ -66,7 +66,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>uma.jayma.data.App</mainClass>
+							<mainClass>uma.jayma.data.sample.App</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
